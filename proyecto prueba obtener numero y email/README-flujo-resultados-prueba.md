@@ -1,5 +1,11 @@
 # Flujo de Resultados de Prueba de Google Sheet
 
+## 📊 Dashboard con Resultados Finales
+
+**Enlace al Dashboard**: [Ver Dashboard de Resultados](https://docs.google.com/spreadsheets/d/1lghGhMGTibgCa70nglYeeSWsJROk1hlgAkVCXrZSVdY/edit?gid=1750655662#gid=1750655662)
+
+Este es el enlace directo a la hoja de cálculo Dashboard donde se registran todos los resultados finales de las validaciones realizadas por el flujo.
+
 ## Descripción
 
 Este flujo de n8n está diseñado para analizar y validar datos de contactos almacenados en Google Sheets. El sistema extrae información de una hoja de cálculo y realiza validaciones exhaustivas sobre emails y números de teléfono, generando métricas detalladas que se registran en un dashboard.
