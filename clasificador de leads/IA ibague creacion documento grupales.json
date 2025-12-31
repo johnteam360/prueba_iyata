@@ -1,0 +1,928 @@
+{
+  "name": "IA ibague creacion documento grupales",
+  "nodes": [
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "accb2d08-086c-4a7e-8073-513321223c9c",
+              "leftValue": "={{ $json.Estado }}",
+              "rightValue": "en proceso",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "52459b28-3630-42b7-b7b7-fa626547df98",
+              "leftValue": "={{ $json.Socializa }}",
+              "rightValue": "si",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        432,
+        96
+      ],
+      "id": "02c34d84-fd66-4dd5-ba36-21a0dcc4b80e",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5.1",
+          "mode": "list",
+          "cachedResultName": "gpt-5.1"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        976,
+        288
+      ],
+      "id": "4334f6d3-dc40-458d-a2f5-a16992b06850",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "YGWfPgzvJxbFUUnn",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-pro",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1040,
+        464
+      ],
+      "id": "e6f37536-9e3b-4ac4-b413-af0c20439e6a",
+      "name": "Google Gemini Chat Model",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.Numero }}",
+        "contextWindowLength": 20
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        1264,
+        304
+      ],
+      "id": "cd62e6c0-cfcb-417f-aebd-f2b949aea2f3",
+      "name": "Postgres Chat Memory",
+      "credentials": {
+        "postgres": {
+          "id": "87MdCCyp5XUlWMsu",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"raza_del_perro\": \"Golden Retriever\",\n  \"nombre_del_perro\": \"Max\",\n  \"tutor\": \"Ana García\",\n  \"objetivo\": \"Reducir la ansiedad por separación\",\n  \"contexto_del_caso\": \"Perro adoptado hace 3 meses, muestra ladridos excesivos y destrozos al quedarse solo por más de 10 minutos.\",\n  \"procedimiento\": \"Implementar entrenamiento de caja (crate training) y ejercicios de desensibilización al ritual de salida.\"\n}",
+        "autoFix": true
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1344,
+        304
+      ],
+      "id": "60bad253-a744-4313-b8d4-91925e7010dd",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "operation": "copy",
+        "fileId": {
+          "__rl": true,
+          "value": "1z2B2dWkdSKggQwSrr78KMxml3lEjAMSLPxRGjxNcPAk",
+          "mode": "list",
+          "cachedResultName": "Plantilla n8n clases grupales",
+          "cachedResultUrl": "https://docs.google.com/document/d/1z2B2dWkdSKggQwSrr78KMxml3lEjAMSLPxRGjxNcPAk/edit?usp=drivesdk"
+        },
+        "name": "={{ $json.Numero }}_{{ $json.output.nombre_del_perro }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1776,
+        96
+      ],
+      "id": "0c3b4091-33b8-4371-8658-5a14ad952e98",
+      "name": "Copy file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "wgGaXN8jHGW1ghpV",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2f7e6325-c07f-4719-a7ab-afdec07db6d0",
+              "name": "procedimiento",
+              "value": "={{ $json.output.Procedimiento }}",
+              "type": "string"
+            },
+            {
+              "id": "fe2f620c-81a1-478a-a12f-7607ba899a68",
+              "name": "reporte_comportamiento",
+              "value": "={{ $json.output['Reporte de comportamientos'] }}",
+              "type": "string"
+            },
+            {
+              "id": "f0a958ba-773d-4042-9ea1-7fcb167c5e93",
+              "name": "objetivo",
+              "value": "={{ $json.output.Objetivo }}",
+              "type": "string"
+            },
+            {
+              "id": "c8de5444-8b5e-4f82-bdfc-40e175ea20be",
+              "name": "socializa",
+              "value": "={{ $('Filter').item.json.Socializa }}",
+              "type": "string"
+            },
+            {
+              "id": "f1bb3401-1240-499a-ae74-0ef34da9ac90",
+              "name": "Edad",
+              "value": "={{ $('Filter').item.json.Edad }}",
+              "type": "string"
+            },
+            {
+              "id": "5332d676-ec8d-4645-bd6b-e87873c66758",
+              "name": "Numero",
+              "value": "={{ $('Filter').item.json.Numero }}",
+              "type": "number"
+            },
+            {
+              "id": "9a2a7b99-1194-4af6-9b71-89b965a380c7",
+              "name": "disponiblidad para inicial",
+              "value": "={{ $('Limit').item.json['disponiblidad para inicial'] }}",
+              "type": "string"
+            },
+            {
+              "id": "238b9987-7c3a-4179-80c2-f204fffc83f1",
+              "name": "Estado",
+              "value": "={{ $('Limit').item.json.Estado }}",
+              "type": "string"
+            },
+            {
+              "id": "5c258814-b462-4074-97c0-c54f95db0f52",
+              "name": "row_number",
+              "value": "={{ $('Limit').item.json.row_number }}",
+              "type": "string"
+            },
+            {
+              "id": "4d6c818e-a0c0-4b06-a801-fe541941e5d6",
+              "name": "ID documento",
+              "value": "={{ $('Limit').item.json['ID documento'] }}",
+              "type": "string"
+            },
+            {
+              "id": "973528ce-4843-4b8d-8c51-ca0d4d90330a",
+              "name": "nombre_del_perro",
+              "value": "={{ $('Limit').item.json['Nombre del perro'] }}",
+              "type": "string"
+            },
+            {
+              "id": "66d2d29c-11a4-4e30-9fd0-6240c713a9d9",
+              "name": "raza_del_perro",
+              "value": "={{ $('Limit').item.json['Raza'] }}",
+              "type": "string"
+            },
+            {
+              "id": "5ae40df8-c4ed-4896-9734-7641edc0801c",
+              "name": "tutor",
+              "value": "={{ $('Limit').item.json['Nombre del tutor'] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1568,
+        96
+      ],
+      "id": "c1092825-8356-4bb9-b00c-c539b035073d",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "={{ $json.id }}",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "replaceAll",
+              "text": "{Nombre del perro}",
+              "replaceText": "={{ $('Edit Fields').item.json.nombre_del_perro }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "{Raza del perro}",
+              "replaceText": "={{ $('Edit Fields').item.json.raza_del_perro }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "{Objetivo}",
+              "replaceText": "={{ $('Edit Fields').item.json.objetivo }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "{Reporte comportamientos}",
+              "replaceText": "={{ $('Edit Fields').item.json.reporte_comportamiento }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "{Causas del comportamiento}",
+              "replaceText": "={{ $('Edit Fields').item.json.procedimiento }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "{Edad del perro}",
+              "replaceText": "={{ $('Edit Fields').item.json.Edad }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "{Tutor}",
+              "replaceText": "={{ $('Edit Fields').item.json.tutor }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        2000,
+        96
+      ],
+      "id": "3b828e93-8812-40cf-ba18-a920266cc880",
+      "name": "Update a document",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "C6CC9gInUsZVNYCy",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        64,
+        96
+      ],
+      "id": "fa44f8e7-b26c-4940-8040-376bd4ab52f7",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1puyDF30RaCatIADBHnucz5w1cPDWZUTAOt9vcwzgt6o",
+          "mode": "list",
+          "cachedResultName": "Tabla_admision_ibague",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1puyDF30RaCatIADBHnucz5w1cPDWZUTAOt9vcwzgt6o/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1puyDF30RaCatIADBHnucz5w1cPDWZUTAOt9vcwzgt6o/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Estado",
+              "lookupValue": "en proceso"
+            },
+            {
+              "lookupColumn": "Socializa",
+              "lookupValue": "si"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        256,
+        96
+      ],
+      "id": "f5838547-85da-44a5-bfc5-220ef8cd39db",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "eS2XVIloIvGaNwej",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6f3a24ee-80cd-4f17-b955-5932eec32972",
+              "name": "nombre_perro",
+              "value": "={{ $('Edit Fields').item.json.output['Nombre del perro'] }}",
+              "type": "string"
+            },
+            {
+              "id": "40e6e157-9ef1-4765-b43b-bb35265dab3e",
+              "name": "documento_pdf",
+              "value": "={{ $json.documentId }}",
+              "type": "string"
+            },
+            {
+              "id": "06baf807-f3c7-4722-9a4c-ef88238856aa",
+              "name": "numero",
+              "value": "={{ $('Edit Fields').item.json.Numero }}",
+              "type": "string"
+            },
+            {
+              "id": "31c4c26b-6002-41df-82bc-fe6b527f2482",
+              "name": "row_number",
+              "value": "={{ $('Edit Fields').item.json.row_number }}",
+              "type": "string"
+            },
+            {
+              "id": "2a64a463-eaf1-4f6a-9877-5ce90a277e3e",
+              "name": "ID documento",
+              "value": "={{ $('Edit Fields').item.json['ID documento'] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2208,
+        96
+      ],
+      "id": "d2cce61f-711e-4d28-b56b-4ba911022ea5",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1puyDF30RaCatIADBHnucz5w1cPDWZUTAOt9vcwzgt6o",
+          "mode": "list",
+          "cachedResultName": "Tabla_admision_ibague",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1puyDF30RaCatIADBHnucz5w1cPDWZUTAOt9vcwzgt6o/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1puyDF30RaCatIADBHnucz5w1cPDWZUTAOt9vcwzgt6o/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Estado": "en espera",
+            "ID documento": "={{ $json.documento_pdf }}",
+            "hora": "={{ $now }}",
+            "row_number": "={{ $json.row_number }}"
+          },
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "Nombre del tutor",
+              "displayName": "Nombre del tutor",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Nombre del perro",
+              "displayName": "Nombre del perro",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Raza",
+              "displayName": "Raza",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Edad",
+              "displayName": "Edad",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Socializa",
+              "displayName": "Socializa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Comportamiento urgente a corregir",
+              "displayName": "Comportamiento urgente a corregir",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Que le gustaria al  tutor que parendiera su perro",
+              "displayName": "Que le gustaria al  tutor que parendiera su perro",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "disponiblidad para inicial",
+              "displayName": "disponiblidad para inicial",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Estado",
+              "displayName": "Estado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Numero",
+              "displayName": "Numero",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "ID documento",
+              "displayName": "ID documento",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "hora",
+              "displayName": "hora",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Diagnostico confirmado",
+              "displayName": "Diagnostico confirmado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "account_id",
+              "displayName": "account_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "conversation_id",
+              "displayName": "conversation_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2464,
+        96
+      ],
+      "id": "3cf26e7b-b26c-45ec-85f5-c9398bbfdbde",
+      "name": "Update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "eS2XVIloIvGaNwej",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://n8n-chatwoot.gsxkdd.easypanel.host/api/v1/accounts/1/conversations/3/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "api_access_token",
+              "value": "=1Qfta89QkWQNG37JucoUhApm"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"content\": \"hay un problema en el nodo del agente creador del documento PDF\",\n  \"message_type\": \"outgoing\",\n  \"private\": false \n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1664,
+        272
+      ],
+      "id": "85a23e34-3d2f-41f8-9b34-0d8dd3a9920c",
+      "name": "HTTP Request19"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        1440,
+        448
+      ],
+      "id": "b272b5fd-4748-44b0-afb3-8f44fb87a21c",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "YGWfPgzvJxbFUUnn",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        1120,
+        272
+      ],
+      "id": "034e0bcb-9179-4766-8370-080ea70f6395",
+      "name": "OpenAI Chat Model2",
+      "credentials": {
+        "openAiApi": {
+          "id": "YGWfPgzvJxbFUUnn",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        736,
+        96
+      ],
+      "id": "8fd0767e-84b5-4607-97f9-c1392409347b",
+      "name": "Limit"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=datos: \nnombre del tutor: {{ $json['Nombre del tutor'] }}\nnombre del perro: {{ $json['Nombre del perro'] }}\nraza: {{ $json.Raza }}\nedad del perro: {{ $json.Edad }}\n{{ $json['Nombre del perro'] }} socializa con otros perros?: \n{{ $json.socializa }}\nComportamiento urgente a corregir del perro: {{ $json['Comportamiento urgente a corregir'] }}\ncomportamientos para enseñar al perro:{{ $json['Que le gustaria al  tutor que parendiera su perro'] }}\ndisponibilidad del tutor para iniciar cursos: {{ $json['disponiblidad para inicial'] }}\nnumero de telefono: {{ $json.Numero }}",
+        "hasOutputParser": true,
+        "needsFallback": true,
+        "options": {
+          "systemMessage": "instrucciones específicas\n\nDependiendo de la información entregada por el cliente, llenarás los siguientes campos dentro del documento:\n\n{Nombre del perro} → Escribe el nombre del perro.\n{Raza del perro} → Escribe la raza del perro.\n{Tutor} → Escribe el nombre del cliente.\n{Objetivo} → Crea un objetivo de máximo 50 palabras que plantee la meta del proceso para solucionar los requerimientos y peticiones del cliente. Menciona la raza y la edad del perro en algún lugar.\n{Reporte de comportamientos} → Describe de manera general las necesidades que el cliente menciona, los comportamientos que desea cambiar en su perro y las posibles causas de esos comportamientos.\n{Procedimiento} → Escribe 3 párrafos donde se explique:\n\t1.\tLas clases que tomará dentro del curso de educación básica grupal.\n\t2.\tEn qué clase se abordará su principal necesidad.\n\t3.\tQué beneficios y cambios se esperan lograr al finalizar el curso.\n\n⸻\n\nInformación del curso (para usar como referencia al escribir el informe)\n\nCurso de Educación Básica – Modalidad grupal\n\nClase 1: E.B.A (Ejercicio Básico de Adiestramiento)\nComandos básicos: sentado, quieto y ven acá. El perro aprenderá permanencia, control de impulsos y obediencia inicial.\nIncluye charla de Tenencia Responsable: rutinas, control de esfínteres, bienestar y convivencia familiar.\n\nClase 2: Protocolos Urbanos\nFacilita los paseos: caminar sin halar la correa, andar junto sin correa y manejo correcto del paseo familiar.\n\nClase 3: Control de Impulsos\nEjercicios para reducir ansiedad y reactividad ante estímulos como motos, bicicletas o pelotas.\n\nClase 4: Comando “Deja”\nEvita que el perro recoja comida o basura del suelo mediante redireccionamiento atencional.\n\nClase 5: Llamado Efectivo\nLogra que el perro vuelva a su tutor sin importar las distracciones.\n\nClase 6: Agility\nBases del deporte canino. Mejora la concentración, coordinación y vínculo.\n\nClase 7: Trucos y Habilidades\nAprendizaje lúdico: “chócalas”, caminar entre las piernas, girar sobre sí mismo, etc.\n\nClases virtuales (miércoles 7:00 PM):\nHigiene, nutrición, correcciones adecuadas, vínculo mediante el juego, y comunicación efectiva.\n\nDuración:\n7 clases presenciales (2 horas cada una, fines de semana)\n7 clases virtuales (familiares, 1 hora cada una)\n\nEvaluación final, graduación y certificación.\nClases de refuerzo gratuitas (si cumple con asistencia y tareas).\nSujeto a cupo mínimo"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        1104,
+        80
+      ],
+      "id": "dcae0ebd-802f-48b3-912d-780a34e851ed",
+      "name": "AI Agent1",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "onError": "continueErrorOutput"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        []
+      ]
+    },
+    "Postgres Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Copy file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Copy file": {
+      "main": [
+        [
+          {
+            "node": "Update a document",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a document": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Structured Output Parser",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HTTP Request19",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "America/Bogota",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false,
+    "errorWorkflow": "2VnfOGSVJdUeE3OK"
+  },
+  "versionId": "89f0b342-7bbe-4417-b174-01c7e69e1374",
+  "meta": {
+    "instanceId": "a6b91e3c21443cd9a3780d90ba42efabb4041f0383ca937391f354fe0e1f80ff"
+  },
+  "id": "o5URLF1WqGPPyJTx",
+  "tags": [
+    {
+      "updatedAt": "2025-12-01T21:23:49.067Z",
+      "createdAt": "2025-12-01T21:23:49.067Z",
+      "id": "d6xdkUH6iZwDp5DK",
+      "name": "Fase 1 ibague"
+    }
+  ]
+}

@@ -1,0 +1,963 @@
+{
+  "name": "envio_repuesta",
+  "nodes": [
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://n8n-chatwoot.gsxkdd.easypanel.host/api/v1/accounts/{{ $json.account_id }}/conversations/{{ $json.conversation_id }}/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "api_access_token",
+              "value": "=1Qfta89QkWQNG37JucoUhApm"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"content\": {{ JSON.stringify($json.text) }},\n  \"message_type\": \"outgoing\",\n  \"private\": false \n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        2352,
+        -32
+      ],
+      "id": "b94eab17-4549-4f77-8a33-39dcdc037b75",
+      "name": "HTTP Request19",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -784,
+        0
+      ],
+      "id": "94d6bad3-a3a3-4795-b69a-50f9399d386f",
+      "name": "When Executed by Another Workflow",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=mensaje de usuario o descripcion de imagen: {{ $json.mensaje_usuario }}\nrepuesta_agente:{{ $json.text }}",
+        "hasOutputParser": true,
+        "needsFallback": true,
+        "options": {
+          "systemMessage": "=Eres el Agente Evaluador de Calidad (Modo Permisivo). Tu única función es actuar como un \"botón de pánico\" o filtro de seguridad final. NO eres un editor de estilo ni un corrector gramatical.\n\nRecibirás dos entradas:\n1. `mensaje_usuario`: Lo que escribió el cliente.\n2. `respuesta_agente`: La respuesta generada por el asistente principal (Marcela).\n\n**TU OBJETIVO:**\nAprobar (`true`) la gran mayoría de las respuestas. Solo debes rechazar (`false`) si la respuesta es catastrófica, técnica o rompe totalmente la experiencia.\n\n**CRITERIOS DE APROBACIÓN (Responde TRUE):**\nDebes ser flexible. Aprueba la respuesta si cumple CUALQUIERA de estos puntos, incluso si no es perfecta:\n- ✅ **Intención de Venta/Agendamiento:** Si el agente intenta vender, agendar, cobrar o pedir datos, es VÁLIDO.\n- ✅ **Contexto del Negocio:** Si habla de perros, entrenamiento, tarifas, horarios, direcciones (Ibagué/El Salado) o comportamiento canino, es VÁLIDO.\n- ✅ **Manejo de Objeciones:** Si intenta convencer al cliente o responder una duda, es VÁLIDO.\n- ✅ **Errores Menores:** Si hay faltas de ortografía leves, un tono ligeramente diferente o redundancia parcial, es VÁLIDO.\n- ✅ **Preguntas:** Si el agente devuelve una pregunta para obtener más información, es VÁLIDO.\n\n**CRITERIOS DE RECHAZO (Responde FALSE):**\nSolo marca `false` en estos casos extremos:\n- ❌ **Bucle Literal:** La `respuesta_agente` es IDÉNTICA (letra por letra) a la respuesta anterior del bot (si tienes acceso al historial) o repite exactamente el `mensaje_usuario`.\n- ❌ **Respuesta Vacía o Nula:** El string está vacío o es `null`.\n- ❌ **Alucinación Grave:** El agente habla de temas que NO son de la escuela canina (ej: vender seguros, recetas de cocina, política).\n- ❌ **Error Técnico:** La respuesta contiene código, JSON sin procesar o mensajes de error del sistema (ej: \"Error 404\", \"function_call\").\n- ❌ **Incoherencia Total:** La respuesta no tiene estructura gramatical o son palabras al azar sin sentido.\n\n**SALIDA:**\n- Si la respuesta es aceptable (el 99% de los casos): `true`\n- Si es un error crítico: `false`"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        -240,
+        0
+      ],
+      "id": "072462ed-81e2-4587-a7ea-e1d88fcab11b",
+      "name": "AI Agent",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "content": "## Evaluador de repuesta",
+        "height": 256,
+        "width": 304
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -256,
+        -112
+      ],
+      "id": "45c37767-c876-4edd-8545-df05d01f7321",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=mensaje_usuario: {{ $json.mensaje_usuario }}\nrepuesta fallida: {{ $json.text }}",
+        "needsFallback": true,
+        "options": {
+          "systemMessage": "=Eres el generador de respuesta de emergencia. Solo entras en acción cuando el asistente principal falla o entrega una respuesta incorrecta, vacía, incoherente o incompleta.\n\nTu objetivo es generar una respuesta coherente, útil y adecuada al mensaje del usuario, respetando el propósito del flujo conversacional. No inventes información fuera de contexto y no dupliques respuestas. Siempre mantén continuidad y claridad.\n\nRecibirás dos datos:\n\nmensaje_usuario → texto enviado por el usuario.\n\nrespuesta_fallida → salida previa del asistente que debe ser ignorada o corregida.\n\nTu tarea consiste en:\n\nEntender la intención real del usuario.\n\nIdentificar el motivo por el cual la respuesta fallida no funciona.\n\nGenerar una respuesta nueva, clara, precisa y totalmente funcional.\n\nMantener el contexto del flujo (agendamientos, direcciones, clasificación, consultas de servicio, etc.).\n\nEvitar contradicciones o desvíos temáticos.\n\nSer breve cuando la situación lo requiera y explicativo cuando sea necesario.\n\nLa salida final debe contener únicamente la respuesta corregida, sin mencionar que eres un agente de respaldo, sin meta-comentarios y sin referencias al error previo. Debes sonar como si fueras el asistente principal respondiendo correctamente.\n\ncontexto del agente principal:\n\n# IDENTIDAD UNIFICADA\n- **Nombre:** Marcela.\n- **Rol:** Asistente y adiestradora de la Escuela Canina Colombiana (ECC) en Ibagué.\n- **Tono:** Cordial, empático, cercano (\"parcero\" pero profesional), resolutivo.\n- **Lenguaje:** Español colombiano natural. Usa muletillas ligeras (\"listo\", \"súper\", \"de una\", \"claro\").\n- **Estilo:** Respuestas breves, una pregunta a la vez, uso moderado de emojis (1-2 por mensaje). Evita formalismos robóticos (NUNCA digas \"Gracias por tu respuesta\").\n\n# REGLAS DE VOCABULARIO\n- \"Agresivo\" → \"Reactivo\".\n- \"Propietario/Dueño\" → \"Tutor\".\n- \"Problema\" → \"Situación\" o \"Comportamiento a mejorar\".\n- \"Costo/Precio\" → \"Tarifa\" o \"Valor\".\n- \"Can\" → \"Perro\" (o \"Cachorro\" si es menor de 1 año).\n\n# FLUJOS DE TRABAJO (POSIBLES CONTEXTOS)\nEl usuario puede estar en uno de estos tres momentos. Identifica cuál es según el mensaje del usuario:\n\n1. **ADMISIÓN INICIAL (Filtro):**\n   - Objetivo: Determinar si el perro va a \"Clases Grupales\" o \"Diagnóstico Personalizado\".\n   - Criterio Clave: ¿El perro socializa bien?\n     - SÍ → Clases Grupales.\n     - NO → Diagnóstico Personalizado (Domicilio).\n     - EXCEPCIÓN: Cachorro <1 año sin vacunas que no ha socializado → Clases Grupales.\n\n2. **CLASES GRUPALES (Venta y Agendamiento):**\n   - Contexto: El perro es apto y socializa.\n   - Oferta: Cursos en sedes campestres o parques.\n   - Precios:\n     - Tarifa Plena: $740.000.\n     - Tarifa Promocional (Cupo limitado): $550.000.\n     - Separación de cupo: $70.000 (congela la tarifa promocional).\n   - Acción: Mostrar horarios disponibles, registrar cupo y coordinar pago.\n\n3. **DIAGNÓSTICO DOMICILIARIO (Casos Reactivos/Complejos):**\n   - Contexto: El perro no socializa o tiene problemas de conducta graves.\n   - Servicio: Visita de valoración en casa (~1 hora).\n   - Costo Visita: $80.000.\n   - Horario: Lunes a Viernes, 9:00 a.m. - 7:00 p.m.\n   - Cobertura: Solo Ibagué y El Salado.\n   - Acción: Acordar fecha/hora, cobrar los $80.000 y pedir dirección.\n\n# INFORMACIÓN ADMINISTRATIVA Y DE PAGOS\n- **Medios de Pago:**\n  - Nequi: 3175291962 (Número actual, si el usuario tiene uno viejo, corregir).\n  - Daviplata: 3213377157.\n  - Bancolombia (Ahorros a la mano/Llavero): 1030571252.\n- **Ubicación Sede Principal:** Carrera Quinta con calle 19 #110, barrio El Carmen, Ibagué. (Referencia: bajando por la quinta, después del puente de la 19, a mano derecha).\n- **Contacto Humano:** Si piden hablar con una persona real/asesor, referir al WhatsApp de Andrea: 3227022161.\n\n# MANEJO DE ERRORES COMUNES\n- Si el usuario pregunta por algo técnico que requiere evaluación: \"Esos detalles los revisará el especialista directamente contigo en la valoración\".\n- Si no hay cupos/horarios: Ofrecer lista de espera o buscar la fecha más cercana.\n- Si el usuario desconfía del pago online: Ofrecer pago en efectivo en sede o llamada con coordinador."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        912,
+        128
+      ],
+      "id": "8c3d8793-5540-48ab-b55c-d0361179e6a5",
+      "name": "AI Agent1",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "f113bc4d-9179-4a27-beb5-ecc4504908ae",
+              "leftValue": "={{ $json.aprobado }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        688,
+        0
+      ],
+      "id": "15b39b68-1537-4e86-b27a-4ed9b7b0912c",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "content": "## Generador de nueva repuesta",
+        "height": 256,
+        "width": 336
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1152,
+        256
+      ],
+      "id": "ae0d2732-f69c-45a7-9c54-8cc4d43b7b1c",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        2608,
+        -48
+      ],
+      "id": "4bf05a7c-8f15-420b-8cb6-466a10308d22",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "amount": 10
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2144,
+        -32
+      ],
+      "id": "56dbeadf-9695-4f50-a26d-a032e9c4e034",
+      "name": "Wait10",
+      "webhookId": "1b59a43e-4b18-4c07-8a2a-7d2f6e7c585f"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.facebook.com/v17.0/869405999582638/messages",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "whatsAppApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"messaging_product\": \"whatsapp\",\n  \"status\": \"read\",\n  \"message_id\": \"{{ $json.mensaje_id }}\",\n  \"typing_indicator\": {\n    \"type\": \"text\"\n  }\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1808,
+        -32
+      ],
+      "id": "5b4639ab-d1a5-4eda-8060-bca760d85892",
+      "name": "HTTP Request10",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "alwaysOutputData": true,
+      "credentials": {
+        "whatsAppApi": {
+          "id": "ZIlDz2ZZLBb39Kft",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "58307aee-ba4f-4aec-8b1e-d5de877d4010",
+              "name": "text",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            },
+            {
+              "id": "c0da9ea0-b86b-49e5-abf9-53c8e3d5b152",
+              "name": "mensaje_usuario",
+              "value": "={{ $json.mensaje_usuario }}",
+              "type": "string"
+            },
+            {
+              "id": "e4ef5d16-6830-4cc3-9c86-2d584828534e",
+              "name": "wa_id",
+              "value": "={{ $json.wa_id }}",
+              "type": "string"
+            },
+            {
+              "id": "ca708f26-c111-4fa9-9234-4424e6320c44",
+              "name": "mensaje_id",
+              "value": "={{ $json.mensaje_id }}",
+              "type": "string"
+            },
+            {
+              "id": "3904463b-e3b2-4b64-9389-816a944c5569",
+              "name": "account_id",
+              "value": "={{ $json.account_id }}",
+              "type": "string"
+            },
+            {
+              "id": "15b632aa-c0ff-4714-b344-ed4c0c252101",
+              "name": "conversation_id",
+              "value": "={{ $json.conversation_id }}",
+              "type": "string"
+            },
+            {
+              "id": "6ff34557-f79d-4032-9e9b-c8bc3f81ac31",
+              "name": "etiqueta",
+              "value": "={{ $json.etiqueta }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -512,
+        0
+      ],
+      "id": "f6e0748c-ac5a-48e7-88ff-83e226af3636",
+      "name": "preparacion_datos1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        0,
+        528
+      ],
+      "id": "7cd5fb6c-43e7-4fcf-84d8-3a66a6ace33e",
+      "name": "Google Gemini Chat Model",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.wa_id }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        -288,
+        192
+      ],
+      "id": "3c1ee5fb-d40a-4318-a9b4-be6ed3b0616c",
+      "name": "Postgres Chat Memory",
+      "credentials": {
+        "postgres": {
+          "id": "87MdCCyp5XUlWMsu",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        496,
+        512
+      ],
+      "id": "76c42e70-2de3-46a5-800f-e733351d19b4",
+      "name": "Google Gemini Chat Model1",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.wa_id }}",
+        "contextWindowLength": 20
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        960,
+        352
+      ],
+      "id": "37fabad2-c2f9-45d6-8a4d-994ccacf2e06",
+      "name": "Postgres Chat Memory1",
+      "credentials": {
+        "postgres": {
+          "id": "87MdCCyp5XUlWMsu",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "cf6beb5b-f614-41e4-a624-b2d8c7894db3",
+              "name": "aprobado",
+              "value": "={{ $json.output }}",
+              "type": "string"
+            },
+            {
+              "id": "58307aee-ba4f-4aec-8b1e-d5de877d4010",
+              "name": "text",
+              "value": "={{ $('preparacion_datos1').item.json.text }}",
+              "type": "string"
+            },
+            {
+              "id": "c0da9ea0-b86b-49e5-abf9-53c8e3d5b152",
+              "name": "mensaje_usuario",
+              "value": "={{ $('preparacion_datos1').item.json.mensaje_usuario }}",
+              "type": "string"
+            },
+            {
+              "id": "e4ef5d16-6830-4cc3-9c86-2d584828534e",
+              "name": "wa_id",
+              "value": "={{ $('preparacion_datos1').item.json.wa_id }}",
+              "type": "string"
+            },
+            {
+              "id": "ca708f26-c111-4fa9-9234-4424e6320c44",
+              "name": "mensaje_id",
+              "value": "={{ $('preparacion_datos1').item.json.mensaje_id }}",
+              "type": "string"
+            },
+            {
+              "id": "3904463b-e3b2-4b64-9389-816a944c5569",
+              "name": "account_id",
+              "value": "={{ $('preparacion_datos1').item.json.account_id }}",
+              "type": "string"
+            },
+            {
+              "id": "15b632aa-c0ff-4714-b344-ed4c0c252101",
+              "name": "conversation_id",
+              "value": "={{ $('preparacion_datos1').item.json.conversation_id }}",
+              "type": "string"
+            },
+            {
+              "id": "6ff34557-f79d-4032-9e9b-c8bc3f81ac31",
+              "name": "etiqueta",
+              "value": "={{ $('preparacion_datos1').item.json.etiqueta }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        464,
+        0
+      ],
+      "id": "d544b2aa-d936-42ce-b84c-ab1031986251",
+      "name": "preparacion_datos"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://n8n-chatwoot.gsxkdd.easypanel.host/api/v1/accounts/{{ $json.account_id }}/conversations/1/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "api_access_token",
+              "value": "=1Qfta89QkWQNG37JucoUhApm"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"content\": \"error_critico_en{{ JSON.stringify($json.error) }}\",\n  \"message_type\": \"outgoing\",\n  \"private\": false \n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        464,
+        176
+      ],
+      "id": "5cd97bb4-c3d1-46bb-91bf-3b0099bf2f8a",
+      "name": "HTTP Request20"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "58307aee-ba4f-4aec-8b1e-d5de877d4010",
+              "name": "text",
+              "value": "={{ $('centralizacion datos').item.json.text }}",
+              "type": "string"
+            },
+            {
+              "id": "c0da9ea0-b86b-49e5-abf9-53c8e3d5b152",
+              "name": "mensaje_usuario",
+              "value": "={{ $('centralizacion datos').item.json.mensaje_usuario }}",
+              "type": "string"
+            },
+            {
+              "id": "e4ef5d16-6830-4cc3-9c86-2d584828534e",
+              "name": "wa_id",
+              "value": "={{ $('centralizacion datos').item.json.wa_id }}",
+              "type": "string"
+            },
+            {
+              "id": "ca708f26-c111-4fa9-9234-4424e6320c44",
+              "name": "mensaje_id",
+              "value": "={{ $('centralizacion datos').item.json.mensaje_id }}",
+              "type": "string"
+            },
+            {
+              "id": "3904463b-e3b2-4b64-9389-816a944c5569",
+              "name": "account_id",
+              "value": "={{ $('centralizacion datos').item.json.account_id }}",
+              "type": "string"
+            },
+            {
+              "id": "15b632aa-c0ff-4714-b344-ed4c0c252101",
+              "name": "conversation_id",
+              "value": "={{ $('centralizacion datos').item.json.conversation_id }}",
+              "type": "string"
+            },
+            {
+              "id": "6ff34557-f79d-4032-9e9b-c8bc3f81ac31",
+              "name": "etiqueta",
+              "value": "={{ $('centralizacion datos').item.json.etiqueta }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1984,
+        -32
+      ],
+      "id": "dfd50dfd-d07a-4d2e-8078-1066bc918e38",
+      "name": "preparacion_datos4"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "58307aee-ba4f-4aec-8b1e-d5de877d4010",
+              "name": "text",
+              "value": "={{ $json.output }}",
+              "type": "string"
+            },
+            {
+              "id": "c0da9ea0-b86b-49e5-abf9-53c8e3d5b152",
+              "name": "mensaje_usuario",
+              "value": "={{ $json.mensaje_usuario }}",
+              "type": "string"
+            },
+            {
+              "id": "e4ef5d16-6830-4cc3-9c86-2d584828534e",
+              "name": "wa_id",
+              "value": "={{ $('If').item.json.wa_id }}",
+              "type": "string"
+            },
+            {
+              "id": "ca708f26-c111-4fa9-9234-4424e6320c44",
+              "name": "mensaje_id",
+              "value": "={{ $('If').item.json.mensaje_id }}",
+              "type": "string"
+            },
+            {
+              "id": "3904463b-e3b2-4b64-9389-816a944c5569",
+              "name": "account_id",
+              "value": "={{ $('If').item.json.account_id }}",
+              "type": "string"
+            },
+            {
+              "id": "15b632aa-c0ff-4714-b344-ed4c0c252101",
+              "name": "conversation_id",
+              "value": "={{ $('If').item.json.conversation_id }}",
+              "type": "string"
+            },
+            {
+              "id": "6ff34557-f79d-4032-9e9b-c8bc3f81ac31",
+              "name": "etiqueta",
+              "value": "={{ $('If').item.json.etiqueta }}",
+              "type": "string"
+            },
+            {
+              "id": "cf6beb5b-f614-41e4-a624-b2d8c7894db3",
+              "name": "aprobado",
+              "value": "={{ $json.output }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1312,
+        80
+      ],
+      "id": "fefe522f-a481-4816-ab9d-6bc5661a7a58",
+      "name": "datos emergentes"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "58307aee-ba4f-4aec-8b1e-d5de877d4010",
+              "name": "text",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            },
+            {
+              "id": "c0da9ea0-b86b-49e5-abf9-53c8e3d5b152",
+              "name": "mensaje_usuario",
+              "value": "={{ $json.mensaje_usuario }}",
+              "type": "string"
+            },
+            {
+              "id": "e4ef5d16-6830-4cc3-9c86-2d584828534e",
+              "name": "wa_id",
+              "value": "={{ $json.wa_id }}",
+              "type": "string"
+            },
+            {
+              "id": "ca708f26-c111-4fa9-9234-4424e6320c44",
+              "name": "mensaje_id",
+              "value": "={{ $json.mensaje_id }}",
+              "type": "string"
+            },
+            {
+              "id": "3904463b-e3b2-4b64-9389-816a944c5569",
+              "name": "account_id",
+              "value": "={{ $json.account_id }}",
+              "type": "string"
+            },
+            {
+              "id": "15b632aa-c0ff-4714-b344-ed4c0c252101",
+              "name": "conversation_id",
+              "value": "={{ $json.conversation_id }}",
+              "type": "string"
+            },
+            {
+              "id": "6ff34557-f79d-4032-9e9b-c8bc3f81ac31",
+              "name": "etiqueta",
+              "value": "={{ $json.etiqueta }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1600,
+        -32
+      ],
+      "id": "575e998c-e1ab-4023-8daa-02ad2a2dda89",
+      "name": "centralizacion datos"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5.1",
+          "mode": "list",
+          "cachedResultName": "gpt-5.1"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        400,
+        672
+      ],
+      "id": "bd18a8de-5f1b-4752-97b4-1aa2468a799d",
+      "name": "modelo de respaldo",
+      "credentials": {
+        "openAiApi": {
+          "id": "YGWfPgzvJxbFUUnn",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5.1",
+          "mode": "list",
+          "cachedResultName": "gpt-5.1"
+        },
+        "builtInTools": {},
+        "options": {
+          "temperature": 0.7
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        432,
+        416
+      ],
+      "id": "7a9b9f0a-0a61-44d9-b303-37dfbed21da6",
+      "name": "modelo principal",
+      "credentials": {
+        "openAiApi": {
+          "id": "YGWfPgzvJxbFUUnn",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        672,
+        176
+      ],
+      "id": "e18ce6d5-5aa5-469f-8b2b-8871a8375d6c",
+      "name": "No Operation, do nothing1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Code node - Run Once for All Items\n// Busca el primer valor definido de `output` entre los items entrantes\nconst raw = items.map(i => i.json && i.json.output).find(v => v !== undefined);\nconst input = String(raw ?? '');\n\n// Extrae \"true\" o \"false\" de cualquier texto\nconst m = input.match(/\\b(true|false)\\b/i);\nconst cleaned = (m ? m[1].toLowerCase() : 'false');\n\n// Devuelve un único item con el formato exacto \"output:true\" ó \"output:false\"\nreturn [{ json: { output: `${cleaned}` } }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        192,
+        -32
+      ],
+      "id": "180ae911-a117-4d89-b8a4-c983c7461069",
+      "name": "Code in JavaScript"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "HTTP Request19": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "preparacion_datos1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HTTP Request20",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "datos emergentes",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "centralizacion datos",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request10": {
+      "main": [
+        [
+          {
+            "node": "preparacion_datos4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait10": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request19",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "preparacion_datos1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        []
+      ]
+    },
+    "Postgres Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        []
+      ]
+    },
+    "Postgres Chat Memory1": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "preparacion_datos": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "preparacion_datos4": {
+      "main": [
+        [
+          {
+            "node": "Wait10",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "datos emergentes": {
+      "main": [
+        [
+          {
+            "node": "centralizacion datos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "centralizacion datos": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request10",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "modelo de respaldo": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 1
+          },
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "modelo principal": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request20": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "preparacion_datos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "America/Bogota",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false,
+    "errorWorkflow": "2VnfOGSVJdUeE3OK"
+  },
+  "versionId": "0badcce4-d64b-46be-82bd-f94c52ffc8ee",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a6b91e3c21443cd9a3780d90ba42efabb4041f0383ca937391f354fe0e1f80ff"
+  },
+  "id": "aV3KXrfNqn2vypB5",
+  "tags": []
+}

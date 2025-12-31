@@ -1,0 +1,328 @@
+{
+  "name": "registro cliente marcela 1",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "78281a5c-15b2-486f-b99d-e9d74361cb3d",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -432,
+        32
+      ],
+      "id": "49e3f0f9-2e34-4a6f-9e0f-dd89083f88d3",
+      "name": "Webhook",
+      "webhookId": "78281a5c-15b2-486f-b99d-e9d74361cb3d"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        432,
+        16
+      ],
+      "id": "f50a0d42-2bbc-4603-9604-02f0c23192ec",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1puyDF30RaCatIADBHnucz5w1cPDWZUTAOt9vcwzgt6o",
+          "mode": "list",
+          "cachedResultName": "Tabla_admision_ibague",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1puyDF30RaCatIADBHnucz5w1cPDWZUTAOt9vcwzgt6o/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1KH9Lmg4MZelDX_C1WiMB0n1ZovnBVRsv1kwiJJJb5fA/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Raza": "={{ $json.body.raza_perro }}",
+            "Estado": "en proceso",
+            "Nombre del tutor": "={{ $json.body.nombre_tutor }}",
+            "Nombre del perro": "={{ $json.body.nombre_perro }}",
+            "Edad": "={{ $json.body.edad_perro }}",
+            "Que le gustaria al  tutor que parendiera su perro": "={{ $json.body.objetivo_principal }}",
+            "Comportamiento urgente a corregir": "={{ $json.body.comportamiento_urgente }}",
+            "disponiblidad para inicial": "={{ $json.body.disponibilidad_iniciar }}",
+            "Numero": "={{ $json.body.numero_tlf }}",
+            "Socializa": "={{ $json.body.socializa_con_otros_perros }}",
+            "row_number": 0
+          },
+          "matchingColumns": [
+            "Numero"
+          ],
+          "schema": [
+            {
+              "id": "Nombre del tutor",
+              "displayName": "Nombre del tutor",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Nombre del perro",
+              "displayName": "Nombre del perro",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Raza",
+              "displayName": "Raza",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Edad",
+              "displayName": "Edad",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Socializa",
+              "displayName": "Socializa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Comportamiento urgente a corregir",
+              "displayName": "Comportamiento urgente a corregir",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Que le gustaria al  tutor que parendiera su perro",
+              "displayName": "Que le gustaria al  tutor que parendiera su perro",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "disponiblidad para inicial",
+              "displayName": "disponiblidad para inicial",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Estado",
+              "displayName": "Estado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Numero",
+              "displayName": "Numero",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ID documento",
+              "displayName": "ID documento",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "hora",
+              "displayName": "hora",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Diagnostico confirmado",
+              "displayName": "Diagnostico confirmado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "account_id",
+              "displayName": "account_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "conversation_id",
+              "displayName": "conversation_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        144,
+        32
+      ],
+      "id": "46c655dc-00e0-4b1e-a5af-8bac9a5eaded",
+      "name": "Update row in sheet",
+      "retryOnFail": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "eS2XVIloIvGaNwej",
+          "name": "Google Sheets account"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "operation": "removeItemsSeenInPreviousExecutions",
+        "dedupeValue": "={{ $json.body.numero_tlf }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.removeDuplicates",
+      "typeVersion": 2,
+      "position": [
+        -144,
+        32
+      ],
+      "id": "44d05f91-9cd2-413c-913b-76dabde050f3",
+      "name": "Remove Duplicates"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Remove Duplicates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remove Duplicates": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "America/Bogota",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false,
+    "errorWorkflow": "2VnfOGSVJdUeE3OK"
+  },
+  "versionId": "e657af69-8beb-4a21-aed3-fc4b8819b9ff",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a6b91e3c21443cd9a3780d90ba42efabb4041f0383ca937391f354fe0e1f80ff"
+  },
+  "id": "tpAZHirIM7qGae3D",
+  "tags": [
+    {
+      "updatedAt": "2025-12-01T21:23:49.067Z",
+      "createdAt": "2025-12-01T21:23:49.067Z",
+      "id": "d6xdkUH6iZwDp5DK",
+      "name": "Fase 1 ibague"
+    }
+  ]
+}

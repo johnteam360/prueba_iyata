@@ -1,0 +1,544 @@
+{
+  "name": "cold email fase 00",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -16,
+        -112
+      ],
+      "id": "0200717d-2710-4537-b916-7e2d6639388b",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "google_maps",
+        "q": "gestoría Madrid",
+        "ll": "@40.416775,-3.703790,10z",
+        "additionalFields": {
+          "hl": "es",
+          "gl": "es"
+        },
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-serpapi.serpApi",
+      "typeVersion": 1,
+      "position": [
+        208,
+        -112
+      ],
+      "id": "1b80ebcc-92ee-4900-8765-5285d7859f19",
+      "name": "Google_maps search",
+      "credentials": {
+        "serpApi": {
+          "id": "TU_SERPAPI_CREDENTIAL_ID_AQUI",
+          "name": "SerpApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "local_results",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        432,
+        -112
+      ],
+      "id": "739c81d5-d6b9-4389-a1c4-2038bbb70923",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b8877fca-ea6f-499f-b4b2-9f6ad7c85fdb",
+              "name": "title",
+              "value": "={{ $json.title }}",
+              "type": "string"
+            },
+            {
+              "id": "af032228-e531-40b5-a655-8bfb03995a7b",
+              "name": "type",
+              "value": "={{ $json.type }}",
+              "type": "string"
+            },
+            {
+              "id": "cbafc853-ccff-4a01-8774-aa5ddf281e73",
+              "name": "phone",
+              "value": "={{ $json.phone }}",
+              "type": "string"
+            },
+            {
+              "id": "fad1ed1e-1e9c-41ac-97ba-22ddd4d9c070",
+              "name": "website",
+              "value": "={{ $json.website }}",
+              "type": "string"
+            },
+            {
+              "id": "6faa976b-4604-409c-bf82-f670c8389999",
+              "name": "dirrecion_ciudad",
+              "value": "={{ $json.address }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        656,
+        -112
+      ],
+      "id": "117a7eaa-005c-4ac8-a08b-78f9b310e111",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $json.main_url }}",
+        "options": {
+          "allowUnauthorizedCerts": true
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1328,
+        -112
+      ],
+      "id": "142903fe-945a-4b91-932e-d391c82a83cb",
+      "name": "HTTP Request",
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        880,
+        -112
+      ],
+      "id": "c3bff661-5475-4463-8c34-c3f78db0883b",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Obtener el HTML (ajusta el nombre del campo si es necesario)\nconst html = $json.data || \"\";\n\n// Regex para capturar correos electrónicos\nconst emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}/g;\n\n// Buscar en todo el HTML\nconst matches = html.match(emailRegex) || [];\n\n// Quitar duplicados\nconst uniqueEmails = [...new Set(matches)];\n\n// Devolver resultado\nreturn [{\n  json: {\n    emails: uniqueEmails\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1552,
+        -112
+      ],
+      "id": "2d5cf958-674a-4c76-9e36-06a622c11fc8",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "jsCode": "// La variable 'items' es proporcionada por n8n y contiene los datos de entrada\nfor (const item of items) {\n  // CORRECCIÓN CLAVE: Acceder a la URL a través de la propiedad 'website' \n  // del objeto de datos (el $json que entra).\n  const url = item.json.website; \n\n  // Verificar si la URL existe antes de intentar hacer 'match'\n  if (url) {\n    // Regex para capturar el protocolo y el dominio completo\n    // Captura: https://bymascota.com\n    const match = url.match(/(https?:\\/\\/[^\\/]+)/i); \n\n    // Si hay match, el grupo 1 (`match[1]`) contiene la URL base.\n    // Añadimos un slash final si no lo tiene, asegurando el formato base.\n    const main_url = match ? match[1] + (match[1].endsWith('/') ? '' : '/') : null;\n\n    // Agregar las nuevas propiedades al objeto de salida (item.json)\n    item.json.original_url = url;\n    item.json.main_url = main_url;\n  } else {\n    // Buenas prácticas: Manejar el caso donde no hay URL o la propiedad no existe\n    item.json.original_url = null;\n    item.json.main_url = null;\n    console.warn(\"La propiedad 'website' no se encontró o está vacía en el objeto de entrada.\");\n  }\n}\n\n// En el nodo Code, siempre debes retornar el array de items modificado.\nreturn items;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1104,
+        -112
+      ],
+      "id": "e32455ac-1059-4fbe-92a6-a2378dea97ac",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "TU_DOCUMENT_ID_COLD_EMAIL_AQUI",
+          "mode": "list",
+          "cachedResultName": "datos cold email",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/TU_DOCUMENT_ID_COLD_EMAIL_AQUI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/TU_DOCUMENT_ID_COLD_EMAIL_AQUI/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "email": "={{ $json.emails }}",
+            "ciudad_direccion": "={{ $json.dirrecion_ciudad }}",
+            "tipo": "={{ $json.type }}",
+            "titulo": "={{ $json.title }}",
+            "numero_tlf": "={{ $json.phone }}",
+            "sitioweb": "={{ $json.website }}",
+            "estado": "en_espera"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "sitioweb",
+              "displayName": "sitioweb",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "numero_tlf",
+              "displayName": "numero_tlf",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "titulo",
+              "displayName": "titulo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "tipo",
+              "displayName": "tipo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ciudad_direccion",
+              "displayName": "ciudad_direccion",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "estado",
+              "displayName": "estado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "asunto",
+              "displayName": "asunto",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2448,
+        -128
+      ],
+      "id": "bf9c013d-28d3-4680-a252-ba790a3d0eeb",
+      "name": "Append row in sheet",
+      "retryOnFail": true,
+      "waitBetweenTries": 3000,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "TU_GOOGLE_SHEETS_CREDENTIAL_ID_AQUI",
+          "name": "Google Sheets account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6ebff796-d174-4a85-98bd-722c5884f929",
+              "name": "emails",
+              "value": "={{ $json.emails }}",
+              "type": "array"
+            },
+            {
+              "id": "26cdbdc9-da29-47c2-a034-7677f6debba5",
+              "name": "title",
+              "value": "={{ $('Code in JavaScript1').item.json.title }}",
+              "type": "string"
+            },
+            {
+              "id": "7329064e-8a6c-4543-af07-18ad8786cf8d",
+              "name": "type",
+              "value": "={{ $('Code in JavaScript1').item.json.type }}",
+              "type": "string"
+            },
+            {
+              "id": "c7276b47-f707-4b05-9bbd-e62b263f7ce2",
+              "name": "phone",
+              "value": "={{ $('Code in JavaScript1').item.json.phone.replace('+', '') }}\n",
+              "type": "string"
+            },
+            {
+              "id": "f3b881ad-e8d6-4226-8055-703ac913a24a",
+              "name": "website",
+              "value": "={{ $('Code in JavaScript1').item.json.main_url }}",
+              "type": "string"
+            },
+            {
+              "id": "51a8c330-499a-4524-a55e-2a72fa536b44",
+              "name": "dirrecion_ciudad",
+              "value": "={{ $('Code in JavaScript1').item.json.dirrecion_ciudad }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1792,
+        -112
+      ],
+      "id": "1cda584b-f3df-4cc3-bb95-401ba5909896",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "7e708f63-1039-4a16-8878-b21c21a499c8",
+              "leftValue": "={{ $json.emails.toString() }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2000,
+        -112
+      ],
+      "id": "b8363ec2-c053-4ad8-bd66-45b5151e2214",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "amount": 2
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2272,
+        -32
+      ],
+      "id": "92bed7fa-7b8a-4f2c-9a98-fb0c879b77af",
+      "name": "Wait",
+      "webhookId": "TU_WEBHOOK_ID_AQUI"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Google_maps search",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google_maps search": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "a65ad9cf-a345-4c3f-9019-1a27645fb9c3",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "TU_INSTANCE_ID_AQUI"
+  },
+  "id": "eQYyy2kN56Z6pGcn",
+  "tags": []
+}

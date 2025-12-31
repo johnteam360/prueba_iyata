@@ -1,0 +1,986 @@
+{
+  "name": "transformacion de datos",
+  "nodes": [
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "784b51a8-6989-4539-905c-87cf29021335",
+              "leftValue": "={{ $json.tipo_attachments }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -3152,
+        -336
+      ],
+      "id": "2c6c726f-1780-4e28-927e-94ae26ab5889",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "FjNSAe1xoKg6ceHi",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/FjNSAe1xoKg6ceHi",
+          "cachedResultName": "solicitud a flowise"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        -1104,
+        -512
+      ],
+      "id": "d9b23ef1-7fbe-43cc-8670-6c993fae7582",
+      "name": "Execute Workflow1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -880,
+        -512
+      ],
+      "id": "0bc594ec-6f92-4e5b-a509-8c7d21484a66",
+      "name": "No Operation, do nothing1"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "FjNSAe1xoKg6ceHi",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/FjNSAe1xoKg6ceHi",
+          "cachedResultName": "solicitud a flowise"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {}
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        -2832,
+        -736
+      ],
+      "id": "1c60100c-fb56-4941-81ae-cde4b335e075",
+      "name": "Call 'solicitud a flowise'"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "eab9185f-d4f6-415a-b3da-1552574a725f",
+              "name": "text",
+              "value": "={{ $json.mensaje_usuario }}",
+              "type": "string"
+            },
+            {
+              "id": "16970360-8850-49ce-8c20-33f2584467b1",
+              "name": "wa_id",
+              "value": "={{ $('If').item.json.wa_id }}",
+              "type": "string"
+            },
+            {
+              "id": "1987b712-7eb7-4f85-bfc9-83470510d314",
+              "name": "account_id",
+              "value": "={{ $('If').item.json.account_id }}",
+              "type": "number"
+            },
+            {
+              "id": "5b762b50-5de5-4626-bac1-b898a62c3e2f",
+              "name": "conversation_id",
+              "value": "={{ $('If').item.json.conversation_id }}",
+              "type": "string"
+            },
+            {
+              "id": "f01ae0a4-7d7e-4985-8378-1aa5a0f2bfce",
+              "name": "etiqueta",
+              "value": "={{ $('If').item.json.etiqueta }}",
+              "type": "string"
+            },
+            {
+              "id": "e7e5a7e8-718e-4a18-b46e-3caaceb4bb23",
+              "name": "mensaje_id",
+              "value": "={{ $('If').item.json.mensaje_id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2992,
+        -576
+      ],
+      "id": "2785aa06-237a-4c8e-9348-45925d9e4245",
+      "name": "recoger datos1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -2704,
+        -864
+      ],
+      "id": "ae27e5df-1af9-4a8b-a587-f1158bf844f3",
+      "name": "No Operation, do nothing2"
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "869405999582638",
+        "recipientPhoneNumber": "={{ $('Recibir mensaje').item.json.contacts[0].wa_id }}",
+        "textBody": "Lo siento puedes repetir el audio no es entendible.",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [
+        -2288,
+        -656
+      ],
+      "id": "1f27377c-7ee5-41d7-83ce-917f012bd2da",
+      "name": "Audio no entendible1",
+      "webhookId": "54ff05b3-0a58-4905-afcc-c5f9b7a9378b",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "whatsAppApi": {
+          "id": "ZIlDz2ZZLBb39Kft",
+          "name": "WhatsApp account"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url}}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "whatsAppApi",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -2352,
+        -960
+      ],
+      "id": "546c65a1-f44d-4c1d-ac9c-4acd09005798",
+      "name": "Obtener Archivo de Audio1",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "whatsAppApi": {
+          "id": "ZIlDz2ZZLBb39Kft",
+          "name": "WhatsApp account"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "transcribe",
+        "options": {
+          "language": "es"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -2160,
+        -1040
+      ],
+      "id": "eebb3975-ac9c-41ae-8fa6-4fba6cd182a4",
+      "name": "Transcribir audio a texto1",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "openAiApi": {
+          "id": "YGWfPgzvJxbFUUnn",
+          "name": "OpenAi account"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "6fb0cb6b-8267-4073-a4c5-03f3b8724281",
+              "leftValue": "={{ $json.text }}",
+              "rightValue": "Subtítulos realizados por la comunidad de Amara.org",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1776,
+        -912
+      ],
+      "id": "81caaf65-ef41-40a8-80dd-3abe4797aa8b",
+      "name": "Se transcribio el audio?1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c0da9ea0-b86b-49e5-abf9-53c8e3d5b152",
+              "name": "text",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            },
+            {
+              "id": "e4ef5d16-6830-4cc3-9c86-2d584828534e",
+              "name": "wa_id",
+              "value": "={{ $('recoger datos2').item.json.wa_id }}",
+              "type": "string"
+            },
+            {
+              "id": "ca708f26-c111-4fa9-9234-4424e6320c44",
+              "name": "mensaje_id",
+              "value": "={{ $('recoger datos2').item.json.mensaje_id }}",
+              "type": "string"
+            },
+            {
+              "id": "3904463b-e3b2-4b64-9389-816a944c5569",
+              "name": "account_id",
+              "value": "={{ $('recoger datos2').item.json.account_id }}",
+              "type": "string"
+            },
+            {
+              "id": "15b632aa-c0ff-4714-b344-ed4c0c252101",
+              "name": "conversation_id",
+              "value": "={{ $('recoger datos2').item.json.conversation_id }}",
+              "type": "string"
+            },
+            {
+              "id": "6ff34557-f79d-4032-9e9b-c8bc3f81ac31",
+              "name": "etiqueta",
+              "value": "={{ $('recoger datos2').item.json.etiqueta }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1920,
+        -1008
+      ],
+      "id": "f432ded1-81ea-4725-ae5d-471907bbe382",
+      "name": "Recepción de texto1"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url_attachments }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "whatsAppApi",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -2432,
+        -352
+      ],
+      "id": "928f0a7a-df81-444c-8ca2-e361ba3a9c0f",
+      "name": "Descargar imagen1",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "whatsAppApi": {
+          "id": "ZIlDz2ZZLBb39Kft",
+          "name": "WhatsApp account"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Aquí tienes una imagen enviada por el usuario. Describe la imagen  y transcribe cualquier texto visible en la imagen. Incluye tantos detalles como sea posible pero no uses \"\" comillas.",
+        "messages": {
+          "messageValues": [
+            {
+              "type": "HumanMessagePromptTemplate",
+              "messageType": "imageBinary"
+            }
+          ]
+        }
+      },
+      "id": "aa2334b7-5432-46ea-9834-47d8c221f5b9",
+      "name": "Explicar imagen1",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "position": [
+        -2064,
+        -352
+      ],
+      "typeVersion": 1.4,
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5.1",
+          "mode": "list",
+          "cachedResultName": "gpt-5.1"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -2000,
+        -192
+      ],
+      "id": "d4bb1b12-9a34-4420-bd11-eea16dafa9a9",
+      "name": "OpenAI Chat Model3",
+      "credentials": {
+        "openAiApi": {
+          "id": "YGWfPgzvJxbFUUnn",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -2624,
+        -208
+      ],
+      "id": "c0cc4c3e-603c-4c09-ac78-1f501a5a8c90",
+      "name": "Wait",
+      "webhookId": "778f04ae-a8eb-4a6e-a515-1aa5cdcfad4b"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -2352,
+        32
+      ],
+      "id": "6881f927-57d5-4f52-a2af-c3f040e94e8a",
+      "name": "No Operation, do nothing4"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://n8n-chatwoot.gsxkdd.easypanel.host/api/v1/accounts/{{ $json.account_id }}/conversations/{{ $json.conversation_id }}/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "api_access_token",
+              "value": "=1Qfta89QkWQNG37JucoUhApm"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"content\": {{ JSON.stringify($json.text) }},\n  \"message_type\": \"outgoing\",\n  \"private\": false \n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -2480,
+        -112
+      ],
+      "id": "ffa040ec-5288-4cfc-b7a0-28c23b887e74",
+      "name": "HTTP Request20"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "16970360-8850-49ce-8c20-33f2584467b1",
+              "name": "wa_id",
+              "value": "={{ $json.wa_id }}",
+              "type": "string"
+            },
+            {
+              "id": "1987b712-7eb7-4f85-bfc9-83470510d314",
+              "name": "account_id",
+              "value": "={{ $json.account_id }}",
+              "type": "number"
+            },
+            {
+              "id": "5b762b50-5de5-4626-bac1-b898a62c3e2f",
+              "name": "conversation_id",
+              "value": "={{ $json.conversation_id }}",
+              "type": "string"
+            },
+            {
+              "id": "12664851-4781-42e8-a451-d6a153b9e13d",
+              "name": "tipo_de_mensaje",
+              "value": "={{ $json.tipo_de_mensaje }}",
+              "type": "string"
+            },
+            {
+              "id": "f01ae0a4-7d7e-4985-8378-1aa5a0f2bfce",
+              "name": "etiqueta",
+              "value": "={{ $json.etiqueta }}",
+              "type": "string"
+            },
+            {
+              "id": "53dad319-6712-455a-96c4-21ecfef0cf95",
+              "name": "url",
+              "value": "={{ $json.url_attachments }}",
+              "type": "string"
+            },
+            {
+              "id": "e7e5a7e8-718e-4a18-b46e-3caaceb4bb23",
+              "name": "mensaje_id",
+              "value": "={{ $json.mensaje_id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2528,
+        -640
+      ],
+      "id": "35533208-27cb-40ac-b6c0-9f416f5ba603",
+      "name": "recoger datos2"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "e4708c05-59b1-49c5-8b8d-d984ef04f7a3",
+                    "leftValue": "={{ $json.tipo_attachments }}",
+                    "rightValue": "audio",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "audio"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "e53aafb5-3e37-4c2f-9ecf-a7762fc182c0",
+                    "leftValue": "={{ $json.tipo_attachments }}",
+                    "rightValue": "image",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "imagen"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "b64b6e2f-236d-4d31-b333-0f7ecbe612bd",
+                    "leftValue": "={{ $json.tipo_attachments }}",
+                    "rightValue": "video",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "video"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        -2784,
+        -368
+      ],
+      "id": "9d9cb749-b903-4845-b69a-2b4be5643663",
+      "name": "switch1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c0da9ea0-b86b-49e5-abf9-53c8e3d5b152",
+              "name": "text",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            },
+            {
+              "id": "e4ef5d16-6830-4cc3-9c86-2d584828534e",
+              "name": "wa_id",
+              "value": "={{ $('switch1').item.json.wa_id }}",
+              "type": "string"
+            },
+            {
+              "id": "ca708f26-c111-4fa9-9234-4424e6320c44",
+              "name": "mensaje_id",
+              "value": "={{ $('switch1').item.json.mensaje_id }}",
+              "type": "string"
+            },
+            {
+              "id": "3904463b-e3b2-4b64-9389-816a944c5569",
+              "name": "account_id",
+              "value": "={{ $('switch1').item.json.account_id }}",
+              "type": "string"
+            },
+            {
+              "id": "15b632aa-c0ff-4714-b344-ed4c0c252101",
+              "name": "conversation_id",
+              "value": "={{ $('switch1').item.json.conversation_id }}",
+              "type": "string"
+            },
+            {
+              "id": "6ff34557-f79d-4032-9e9b-c8bc3f81ac31",
+              "name": "etiqueta",
+              "value": "={{ $('switch1').item.json.etiqueta }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1584,
+        -384
+      ],
+      "id": "9ae7f8ff-2377-47a4-9502-bd62a518246a",
+      "name": "datos_rama_imagen1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c0da9ea0-b86b-49e5-abf9-53c8e3d5b152",
+              "name": "text",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            },
+            {
+              "id": "e4ef5d16-6830-4cc3-9c86-2d584828534e",
+              "name": "wa_id",
+              "value": "={{ $json.wa_id }}",
+              "type": "string"
+            },
+            {
+              "id": "ca708f26-c111-4fa9-9234-4424e6320c44",
+              "name": "mensaje_id",
+              "value": "={{ $json.mensaje_id }}",
+              "type": "string"
+            },
+            {
+              "id": "3904463b-e3b2-4b64-9389-816a944c5569",
+              "name": "account_id",
+              "value": "={{ $json.account_id }}",
+              "type": "string"
+            },
+            {
+              "id": "15b632aa-c0ff-4714-b344-ed4c0c252101",
+              "name": "conversation_id",
+              "value": "={{ $json.conversation_id }}",
+              "type": "string"
+            },
+            {
+              "id": "6ff34557-f79d-4032-9e9b-c8bc3f81ac31",
+              "name": "etiqueta",
+              "value": "={{ $json.etiqueta }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1280,
+        -512
+      ],
+      "id": "8cb3345d-8c5e-473a-afa8-0e301c7181fd",
+      "name": "concetracion_datos1"
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -3360,
+        -304
+      ],
+      "id": "ee71da35-a328-41db-99f6-356511ddb943",
+      "name": "When Executed by Another Workflow"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "If": {
+      "main": [
+        [
+          {
+            "node": "recoger datos1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "switch1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Workflow1": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'solicitud a flowise'": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "recoger datos1": {
+      "main": [
+        [
+          {
+            "node": "Call 'solicitud a flowise'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Audio no entendible1": {
+      "main": [
+        [],
+        []
+      ]
+    },
+    "Obtener Archivo de Audio1": {
+      "main": [
+        [
+          {
+            "node": "Transcribir audio a texto1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Transcribir audio a texto1": {
+      "main": [
+        [
+          {
+            "node": "Recepción de texto1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Se transcribio el audio?1": {
+      "main": [
+        [
+          {
+            "node": "concetracion_datos1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Audio no entendible1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recepción de texto1": {
+      "main": [
+        [
+          {
+            "node": "Se transcribio el audio?1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Descargar imagen1": {
+      "main": [
+        [
+          {
+            "node": "Explicar imagen1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Explicar imagen1": {
+      "main": [
+        [
+          {
+            "node": "datos_rama_imagen1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "OpenAI Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Explicar imagen1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request20",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request20": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "recoger datos2": {
+      "main": [
+        [
+          {
+            "node": "Obtener Archivo de Audio1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "switch1": {
+      "main": [
+        [
+          {
+            "node": "recoger datos2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Descargar imagen1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "datos_rama_imagen1": {
+      "main": [
+        [
+          {
+            "node": "concetracion_datos1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "concetracion_datos1": {
+      "main": [
+        [
+          {
+            "node": "Execute Workflow1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "America/Bogota",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false,
+    "errorWorkflow": "2VnfOGSVJdUeE3OK"
+  },
+  "versionId": "d6c30eb7-e23a-4536-91cd-b39f1c7b4963",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a6b91e3c21443cd9a3780d90ba42efabb4041f0383ca937391f354fe0e1f80ff"
+  },
+  "id": "649ztzmcGdteMMzw",
+  "tags": []
+}

@@ -1,0 +1,609 @@
+{
+  "name": "SOLICITUD AGENDAR y BUSCAR CITA",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "1bfc4864-3ff7-470b-8074-3125386cc918",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -2784,
+        96
+      ],
+      "id": "9c879694-faae-400b-ba1b-f6a21154a02d",
+      "name": "Webhook",
+      "webhookId": "1bfc4864-3ff7-470b-8074-3125386cc918"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "Agendamiento de cita realizado",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -1632,
+        -48
+      ],
+      "id": "d481c0c3-eafa-4a05-ae2b-df8fb6be91b5",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "7023e395-d0e9-439d-bf21-43166a3a0ab6",
+              "leftValue": "={{ $json.peticion }}",
+              "rightValue": "CREAR_CITA",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -2400,
+        96
+      ],
+      "id": "fea4a5ff-ce27-4e93-8946-f565994ef0a3",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "d1e3fabd-1cff-4450-ae03-319ce93ae213",
+              "leftValue": "={{ $json.direccion_cliente }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1488,
+        -96
+      ],
+      "id": "7c8a9629-aeb5-4c28-ac69-04d41bc60f9a",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "81cacebdd3a1d2513e28d47c1d30cc911c83375fce58c0cd164cacebea92da7c@group.calendar.google.com",
+          "mode": "list",
+          "cachedResultName": "ACADEMICA"
+        },
+        "start": "={{ $json.fecha_inicio_iso }}",
+        "end": "={{ $json.fecha_fin_iso }}",
+        "additionalFields": {
+          "color": "9",
+          "summary": "=TLF: {{ $json.numero_tlf }}\ndireccion:{{ $json.direccion_cliente }}\nciudad:{{ $json.ciudad }}\n {{ $json.datos_cliente }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        -1984,
+        -16
+      ],
+      "id": "fc49033a-5b90-4a44-a7ba-4b42f071c9eb",
+      "name": "Create an event",
+      "alwaysOutputData": true,
+      "retryOnFail": false,
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "q0WmFKhDaEfivOuV",
+          "name": "Google Calendar account"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "584dc072-03ff-4e07-b8dc-ccfbd251f3fa",
+              "name": "direccion_cliente",
+              "value": "={{ $('If').item.json.direccion_cliente }}",
+              "type": "string"
+            },
+            {
+              "id": "7be626d9-aba8-4604-ad99-e2e57fac4d05",
+              "name": "dateTime",
+              "value": "={{ $json.start.dateTime }}",
+              "type": "string"
+            },
+            {
+              "id": "360bee9a-8063-44e1-9001-7e4b91b1df70",
+              "name": "dateTime",
+              "value": "={{ $json.end.dateTime }}",
+              "type": "string"
+            },
+            {
+              "id": "6e5d03a8-0be3-4066-9d01-53a87bab2bf3",
+              "name": "=numero_tlf",
+              "value": "={{ $('If').item.json.numero_tlf }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1792,
+        -32
+      ],
+      "id": "1bdbf464-0bec-402a-a0e9-9c7500b39365",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -1280,
+        0
+      ],
+      "id": "a64fe487-1cb6-4386-a760-ef9a6a99416b",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1puyDF30RaCatIADBHnucz5w1cPDWZUTAOt9vcwzgt6o",
+          "mode": "list",
+          "cachedResultName": "Tabla_admision_ibague",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1puyDF30RaCatIADBHnucz5w1cPDWZUTAOt9vcwzgt6o/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1KH9Lmg4MZelDX_C1WiMB0n1ZovnBVRsv1kwiJJJb5fA/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Numero": "={{ $json.numero_tlf }}",
+            "Diagnostico confirmado": "={{ $json.direccion_cliente }}"
+          },
+          "matchingColumns": [
+            "Numero"
+          ],
+          "schema": [
+            {
+              "id": "Nombre del tutor",
+              "displayName": "Nombre del tutor",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Nombre del perro",
+              "displayName": "Nombre del perro",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Raza",
+              "displayName": "Raza",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Edad",
+              "displayName": "Edad",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Socializa",
+              "displayName": "Socializa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Comportamiento urgente a corregir",
+              "displayName": "Comportamiento urgente a corregir",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Que le gustaria al  tutor que parendiera su perro",
+              "displayName": "Que le gustaria al  tutor que parendiera su perro",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "disponiblidad para inicial",
+              "displayName": "disponiblidad para inicial",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Estado",
+              "displayName": "Estado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Numero",
+              "displayName": "Numero",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ID documento",
+              "displayName": "ID documento",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "hora",
+              "displayName": "hora",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Diagnostico confirmado",
+              "displayName": "Diagnostico confirmado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "account_id",
+              "displayName": "account_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "conversation_id",
+              "displayName": "conversation_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -1280,
+        -144
+      ],
+      "id": "790a84f3-4da8-4357-ab94-9c8c416cde24",
+      "name": "Update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "eS2XVIloIvGaNwej",
+          "name": "Google Sheets account"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "81cacebdd3a1d2513e28d47c1d30cc911c83375fce58c0cd164cacebea92da7c@group.calendar.google.com",
+          "mode": "list",
+          "cachedResultName": "ACADEMICA"
+        },
+        "returnAll": true,
+        "timeMin": "={{ $json.fecha_inicio_iso }}",
+        "timeMax": "={{ $json.fecha_fin_iso }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        -2160,
+        176
+      ],
+      "id": "35552e08-2e0f-4708-81d5-9360ee4254d4",
+      "name": "Get many events",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "q0WmFKhDaEfivOuV",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "=Consulta realizada fecha disponible para agendamiento, si la siguiente variable \"fecha disponible\"es null o vacia: \n\nfecha disponible:{{ $json.start.dateTime }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -1968,
+        192
+      ],
+      "id": "78ad1ac5-8fb9-4546-85a1-2995a6b2ff67",
+      "name": "Respond to Webhook1"
+    },
+    {
+      "parameters": {
+        "jsCode": "/**\n * Script para N8N - Procesar mensaje y generar fechas ISO 8601\n * Corregido para calcular correctamente el día siguiente\n */\n\n// ========== FUNCIÓN PRINCIPAL ==========\nfunction procesarMensajeFecha(mensaje) {\n    // Normalizar el mensaje a minúsculas\n    const mensajeNormalizado = mensaje.toLowerCase();\n    \n    // Mapa de días de la semana en español\n    const diasSemana = {\n        'domingo': 0,\n        'lunes': 1,\n        'martes': 2,\n        'miércoles': 3,\n        'miercoles': 3,\n        'jueves': 4,\n        'viernes': 5,\n        'sábado': 6,\n        'sabado': 6\n    };\n    \n    // Detectar el día de la semana\n    let diaObjetivo = null;\n    for (const [dia, numero] of Object.entries(diasSemana)) {\n        if (mensajeNormalizado.includes(dia)) {\n            diaObjetivo = numero;\n            break;\n        }\n    }\n    \n    if (diaObjetivo === null) {\n        throw new Error(\"No se pudo detectar un día de la semana en el mensaje\");\n    }\n    \n    // Detectar la hora\n    let hora = null;\n    let minutos = 0;\n    \n    // Patrón 1: Hora con AM/PM (ej: \"2 pm\", \"2:30 pm\", \"2 p.m.\")\n    const patronAmPm = /(\\d{1,2})(?::(\\d{2}))?\\s*(?:p\\.m\\.|pm|a\\.m\\.|am)/i;\n    const matchAmPm = mensajeNormalizado.match(patronAmPm);\n    \n    if (matchAmPm) {\n        hora = parseInt(matchAmPm[1]);\n        minutos = matchAmPm[2] ? parseInt(matchAmPm[2]) : 0;\n        const periodo = mensajeNormalizado.includes('a.m.') || mensajeNormalizado.includes('am') ? 'am' : 'pm';\n        \n        // Convertir a formato 24 horas\n        if (periodo === 'pm' && hora !== 12) {\n            hora += 12;\n        } else if (periodo === 'am' && hora === 12) {\n            hora = 0;\n        }\n    } else {\n        // Patrón 2: Hora en formato 24h o simple\n        const patronHora = /(?:las?\\s+)?(\\d{1,2})(?::(\\d{2}))?(?:\\s*horas?)?/;\n        const matchHora = mensajeNormalizado.match(patronHora);\n        \n        if (matchHora) {\n            hora = parseInt(matchHora[1]);\n            minutos = matchHora[2] ? parseInt(matchHora[2]) : 0;\n            \n            // Si la hora es menor a 7, probablemente sea PM\n            if (hora >= 1 && hora <= 6 && !mensajeNormalizado.includes('madrugada') && !mensajeNormalizado.includes('mañana')) {\n                hora += 12;\n            }\n        }\n    }\n    \n    if (hora === null) {\n        throw new Error(\"No se pudo detectar una hora en el mensaje\");\n    }\n    \n    // Validar hora\n    if (hora < 0 || hora > 23 || minutos < 0 || minutos > 59) {\n        throw new Error(\"Hora inválida detectada\");\n    }\n    \n    // Obtener la fecha actual en zona horaria de Bogotá\n    const ahoraUTC = new Date();\n    // Convertir a hora de Bogotá (UTC-5)\n    const ahoraBogota = new Date(ahoraUTC.getTime() - (5 * 60 * 60 * 1000));\n    \n    // Obtener el día actual en Bogotá\n    const diaActualBogota = ahoraBogota.getUTCDay();\n    \n    // Calcular días hasta el objetivo\n    let diasHastaObjetivo = diaObjetivo - diaActualBogota;\n    \n    // Si el día ya pasó esta semana, o es hoy pero ya pasó la hora, ir a la próxima semana\n    if (diasHastaObjetivo < 0) {\n        diasHastaObjetivo += 7;\n    } else if (diasHastaObjetivo === 0) {\n        // Es el mismo día, verificar si la hora ya pasó\n        const horaActualBogota = ahoraBogota.getUTCHours();\n        const minutosActualesBogota = ahoraBogota.getUTCMinutes();\n        \n        if (hora < horaActualBogota || (hora === horaActualBogota && minutos <= minutosActualesBogota)) {\n            // La hora ya pasó, ir a la próxima semana\n            diasHastaObjetivo = 7;\n        }\n    }\n    \n    // Crear la fecha objetivo sumando los días\n    const fechaObjetivo = new Date(ahoraBogota);\n    fechaObjetivo.setUTCDate(ahoraBogota.getUTCDate() + diasHastaObjetivo);\n    fechaObjetivo.setUTCHours(hora, minutos, 0, 0);\n    \n    // Convertir de vuelta a UTC (sumar 5 horas)\n    const fechaInicio = new Date(fechaObjetivo.getTime() + (5 * 60 * 60 * 1000));\n    \n    // Crear fecha de fin (una hora después)\n    const fechaFin = new Date(fechaInicio.getTime() + (60 * 60 * 1000));\n    \n    return {\n        fecha_inicio_iso: fechaInicio.toISOString(),\n        fecha_fin_iso: fechaFin.toISOString(),\n        dia_detectado: Object.keys(diasSemana).find(key => diasSemana[key] === diaObjetivo),\n        hora_detectada: `${hora.toString().padStart(2, '0')}:${minutos.toString().padStart(2, '0')}`\n    };\n}\n\n// ========== LEER DATOS DEL WEBHOOK EN N8N ==========\n\n// Acceder a los datos del body del webhook\nconst body = $input.item.json.body;\n\n// Obtener el mensaje\nconst mensaje = body.mensaje;\n\n// Validar que existe el mensaje\nif (!mensaje) {\n    throw new Error(\"No se recibió ningún mensaje en el campo 'mensaje' del webhook\");\n}\n\n// Procesar el mensaje\nconst resultado = procesarMensajeFecha(mensaje);\n\n// ========== RETORNAR DATOS PARA N8N ==========\n\nreturn {\n    json: {\n        // Campos originales del webhook\n        peticion: body.peticion,\n        ciudad: body.ciudad,\n        direccion_cliente: body.direccion_cliente,\n        datos_cliente: body.datos_cliente,\n        numero_tlf: body.numero_tlf,\n        \n        // Mensaje original\n        mensaje_original: mensaje,\n        \n        // Fechas ISO 8601 generadas\n        fecha_inicio_iso: resultado.fecha_inicio_iso,\n        fecha_fin_iso: resultado.fecha_fin_iso,\n        \n        // Información adicional\n        dia_detectado: resultado.dia_detectado,\n        hora_detectada: resultado.hora_detectada\n    }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2592,
+        96
+      ],
+      "id": "fb3d7944-c541-45de-a4d5-5026d7129c4e",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "operation": "removeItemsSeenInPreviousExecutions",
+        "dedupeValue": "={{ $json.fecha_inicio_iso }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.removeDuplicates",
+      "typeVersion": 2,
+      "position": [
+        -2192,
+        0
+      ],
+      "id": "6f269293-b9e5-4623-9b98-aa01e55a4a42",
+      "name": "Remove Duplicates"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond to Webhook": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Remove Duplicates",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get many events",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create an event": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many events": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remove Duplicates": {
+      "main": [
+        [
+          {
+            "node": "Create an event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "America/Bogota",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false,
+    "errorWorkflow": "2VnfOGSVJdUeE3OK"
+  },
+  "versionId": "ea2de191-b756-4b63-8ad6-4fdb6244a3db",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a6b91e3c21443cd9a3780d90ba42efabb4041f0383ca937391f354fe0e1f80ff"
+  },
+  "id": "3R5dFtGRIUyha6Qj",
+  "tags": [
+    {
+      "updatedAt": "2025-12-01T21:23:49.067Z",
+      "createdAt": "2025-12-01T21:23:49.067Z",
+      "id": "d6xdkUH6iZwDp5DK",
+      "name": "Fase 1 ibague"
+    }
+  ]
+}

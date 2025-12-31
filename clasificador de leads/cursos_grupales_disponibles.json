@@ -1,0 +1,645 @@
+{
+  "name": "cursos_grupales_disponibles",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "1140624f-00b1-4e26-b71d-6cd2cc0aac57",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "97c7fbea-a2cd-4b0d-b60d-7742af136cf0",
+      "name": "Webhook",
+      "webhookId": "1140624f-00b1-4e26-b71d-6cd2cc0aac57"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "79ae18a3-d45a-45d5-bcf3-e03cd394ec8e",
+              "leftValue": "={{ $json.body.peticion }}",
+              "rightValue": "get",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        208,
+        0
+      ],
+      "id": "7475431a-5b65-4e13-8c3a-e569c3fa308a",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1g2O5Fg1V9f_MsEGJtV3Af4K7lLlyfIdzLMLL4Y0vMxk",
+          "mode": "list",
+          "cachedResultName": "tabla_informativa_cupos_grupales",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1g2O5Fg1V9f_MsEGJtV3Af4K7lLlyfIdzLMLL4Y0vMxk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 168924736,
+          "mode": "list",
+          "cachedResultName": "Hoja 2",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1g2O5Fg1V9f_MsEGJtV3Af4K7lLlyfIdzLMLL4Y0vMxk/edit#gid=168924736"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        400,
+        -144
+      ],
+      "id": "d00ece14-b5ef-4f6e-99d4-9ab593762155",
+      "name": "Get row(s) in sheet",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "eS2XVIloIvGaNwej",
+          "name": "Google Sheets account"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "453cd11e-5999-40bd-9259-d93a5676a3bb",
+              "name": "LUGAR",
+              "value": "={{ $json.LUGAR }}",
+              "type": "string"
+            },
+            {
+              "id": "7fe760bc-f74c-4950-b106-f31759ffaeec",
+              "name": "FECHA_INICIO",
+              "value": "={{ $json['FECHA INICIO'] }}",
+              "type": "string"
+            },
+            {
+              "id": "87f04659-03f0-43cf-81b4-c0cfce93f9b3",
+              "name": "DIAS",
+              "value": "={{ $json.DIAS }}",
+              "type": "string"
+            },
+            {
+              "id": "8ed72d64-ae77-4721-938a-08079c6a25d1",
+              "name": "HORARIO_ENTRENAMIENTO",
+              "value": "={{ $json['HORARIO ENTRENAMIENTO'] }}",
+              "type": "string"
+            },
+            {
+              "id": "bbd03510-20de-4075-8e84-1f4ef116a69d",
+              "name": "Estado",
+              "value": "={{ $json.Estado }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        608,
+        -160
+      ],
+      "id": "8e3076be-7c35-4904-8a25-c5fdc012247f",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        1296,
+        0
+      ],
+      "id": "31bdaa73-4260-4bb7-ae98-464ff5bc88a0",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "5ddb2222-e607-4326-b3ef-d4bb73c4f5e6",
+              "leftValue": "={{ $json.Estado }}",
+              "rightValue": "activo",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        800,
+        -160
+      ],
+      "id": "eb472ed0-8c95-4b42-916d-c96019c2694c",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1g2O5Fg1V9f_MsEGJtV3Af4K7lLlyfIdzLMLL4Y0vMxk",
+          "mode": "list",
+          "cachedResultName": "tabla_informativa_cupos_grupales",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1g2O5Fg1V9f_MsEGJtV3Af4K7lLlyfIdzLMLL4Y0vMxk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 168924736,
+          "mode": "list",
+          "cachedResultName": "Hoja 2",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1g2O5Fg1V9f_MsEGJtV3Af4K7lLlyfIdzLMLL4Y0vMxk/edit#gid=168924736"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "LUGAR",
+              "lookupValue": "={{ $json.body.Lugar }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        352,
+        240
+      ],
+      "id": "9dc2708a-ca77-47c8-88a0-9e888da24988",
+      "name": "Get row(s) in sheet1",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "eS2XVIloIvGaNwej",
+          "name": "Google Sheets account"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = items[0].json; \nconst nuevoCliente = $('If').first().json.body.id_numero;\n\n// claves que vamos a revisar\nconst clavesClientes = [\n  \"Cliente 1\",\"Cliente 2\",\"cliente 3\",\"cliente 4\",\"cliente 5\",\n  \"cliente 6\",\"cliente 7\",\"cliente 8\",\"cliente 9\",\"cliente 10\"\n];\n\n// buscar primer campo vacío\nfor (const key of clavesClientes) {\n  if (!data[key] || data[key] === \"\") {\n    data[key] = nuevoCliente;\n    break;\n  }\n}\n\n// devolver datos limpios\nreturn [{ json: data }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        640,
+        288
+      ],
+      "id": "573f4b16-3c42-4e2e-82d1-4f0072b9c3a8",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1g2O5Fg1V9f_MsEGJtV3Af4K7lLlyfIdzLMLL4Y0vMxk",
+          "mode": "list",
+          "cachedResultName": "tabla_informativa_cupos_grupales",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1g2O5Fg1V9f_MsEGJtV3Af4K7lLlyfIdzLMLL4Y0vMxk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 168924736,
+          "mode": "list",
+          "cachedResultName": "Hoja 2",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1g2O5Fg1V9f_MsEGJtV3Af4K7lLlyfIdzLMLL4Y0vMxk/edit#gid=168924736"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "LUGAR": "={{ $json.LUGAR }}",
+            "Cliente 1": "={{ $json[\"Cliente 1\"] }}",
+            "Cliente 2": "={{ $json[\"Cliente 2\"] }}",
+            "cliente 3": "={{ $json[\"cliente 3\"] }}",
+            "cliente 4": "={{ $json[\"cliente 4\"] }}",
+            "cliente 5": "={{ $json[\"cliente 5\"] }}",
+            "cliente 6": "={{ $json[\"cliente 6\"] }}",
+            "cliente 7": "={{ $json[\"cliente 7\"] }}",
+            "cliente 8": "={{ $json[\"cliente 8\"] }}",
+            "cliente 9": "={{ $json[\"cliente 9\"] }}",
+            "cliente 10": "={{ $json[\"cliente 10\"] }}"
+          },
+          "matchingColumns": [
+            "LUGAR"
+          ],
+          "schema": [
+            {
+              "id": "LUGAR",
+              "displayName": "LUGAR",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "FECHA INICIO",
+              "displayName": "FECHA INICIO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "DIAS",
+              "displayName": "DIAS",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "HORARIO ENTRENAMIENTO",
+              "displayName": "HORARIO ENTRENAMIENTO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Estado",
+              "displayName": "Estado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "CUPOS DISPONIBLES",
+              "displayName": "CUPOS DISPONIBLES",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Cliente 1",
+              "displayName": "Cliente 1",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Cliente 2",
+              "displayName": "Cliente 2",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "cliente 3",
+              "displayName": "cliente 3",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "cliente 4",
+              "displayName": "cliente 4",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "cliente 5",
+              "displayName": "cliente 5",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "cliente 6",
+              "displayName": "cliente 6",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "cliente 7",
+              "displayName": "cliente 7",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "cliente 8",
+              "displayName": "cliente 8",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "cliente 9",
+              "displayName": "cliente 9",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "cliente 10",
+              "displayName": "cliente 10",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        880,
+        272
+      ],
+      "id": "cd5eec58-61c4-42ab-95e7-0360f436a090",
+      "name": "Update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "eS2XVIloIvGaNwej",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1456,
+        0
+      ],
+      "id": "d0100515-a0bd-4730-b2cc-87f3196f8e15",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "LUGAR"
+            },
+            {
+              "fieldToAggregate": "FECHA_INICIO"
+            },
+            {
+              "fieldToAggregate": "DIAS"
+            },
+            {
+              "fieldToAggregate": "HORARIO_ENTRENAMIENTO"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1008,
+        -128
+      ],
+      "id": "2aca1244-7d77-435a-9871-4134c5186e26",
+      "name": "Aggregate"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get row(s) in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond to Webhook": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "America/Bogota",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false,
+    "errorWorkflow": "2VnfOGSVJdUeE3OK"
+  },
+  "versionId": "6fbb0f77-f5ec-41d7-b7c9-dc034b68fb9b",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a6b91e3c21443cd9a3780d90ba42efabb4041f0383ca937391f354fe0e1f80ff"
+  },
+  "id": "3mMlG8zI25IQBSac",
+  "tags": [
+    {
+      "updatedAt": "2025-12-02T12:30:23.295Z",
+      "createdAt": "2025-12-02T12:30:23.295Z",
+      "id": "EYg77QtAa7W85xVi",
+      "name": "escuela canina"
+    },
+    {
+      "updatedAt": "2025-12-01T21:23:49.067Z",
+      "createdAt": "2025-12-01T21:23:49.067Z",
+      "id": "d6xdkUH6iZwDp5DK",
+      "name": "Fase 1 ibague"
+    }
+  ]
+}

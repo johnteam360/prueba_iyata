@@ -1,0 +1,647 @@
+{
+  "name": "envio de email cold email",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyHour"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "TU_DOCUMENT_ID_COLD_EMAIL_AQUI",
+          "mode": "list",
+          "cachedResultName": "datos cold email",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/TU_DOCUMENT_ID_COLD_EMAIL_AQUI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/TU_DOCUMENT_ID_COLD_EMAIL_AQUI/edit#gid=0"
+        },
+        "event": "rowAdded",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "7c9a9fb8-7d9e-4976-bb4b-75ce5c08d0dc",
+      "name": "Google Sheets Trigger",
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "TU_GOOGLE_SHEETS_TRIGGER_CREDENTIAL_ID_AQUI",
+          "name": "Google Sheets Trigger account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// La variable 'items' contiene el array de datos que entra al nodo Code.\nfor (const item of items) {\n  // Accede al objeto JSON de la entrada actual.\n  const inputJson = item.json;\n  \n  // 1. Obtener la propiedad 'email' que actualmente es un string JSON.\n  const emailString = inputJson.email;\n  \n  // 2. Comprobar si existe y si es un string (buenas prácticas).\n  if (emailString && typeof emailString === 'string') {\n    try {\n      // 3. Parsear el string JSON a un array de JavaScript.\n      // Ejemplo: '[\"a@b.com\", \"c@d.com\"]' -> [\"a@b.com\", \"c@d.com\"]\n      const emailArray = JSON.parse(emailString);\n      \n      // 4. Actualizar la propiedad 'email' en el objeto de salida con el array limpio.\n      inputJson.email = emailArray;\n      \n    } catch (e) {\n      // Manejar el error si el string no es un JSON válido (buenas prácticas).\n      console.error(`Error al parsear el email para el item ${inputJson.sitioweb}: ${e.message}`);\n      // Opcional: Podrías establecerlo a null o dejar el string original si falla.\n      // inputJson.email = null; \n    }\n  }\n  \n  // *Nota:* Todas las demás variables (sitioweb, numero_tlf, titulo, etc.) \n  // se pasan automáticamente porque estamos modificando 'item.json' directamente.\n}\n\n// Devuelve el array de items modificado, que ahora tiene la propiedad 'email' como un array.\nreturn items;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        656,
+        16
+      ],
+      "id": "ca9a13a9-cb06-4e90-bcff-65c5a4e1ffd8",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        464,
+        0
+      ],
+      "id": "a50f79fd-a8ef-4eda-a0f3-1b2b2b138dea",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "939eb214-42c6-4b6e-af35-a87b7ad82ed4",
+              "name": "sitioweb",
+              "value": "={{ $json.sitioweb }}",
+              "type": "string"
+            },
+            {
+              "id": "f3c1ac99-fb5e-4b39-9848-c0704eadbb44",
+              "name": "numero_tlf",
+              "value": "={{ $json.numero_tlf }}",
+              "type": "string"
+            },
+            {
+              "id": "6c708944-5b0c-4aae-bb85-e2b43e6c90ac",
+              "name": "titulo",
+              "value": "={{ $json.titulo }}",
+              "type": "string"
+            },
+            {
+              "id": "9aed14e2-92eb-42a6-9bb7-e7f74e7c5689",
+              "name": "tipo",
+              "value": "={{ $json.tipo }}",
+              "type": "string"
+            },
+            {
+              "id": "d04465d7-9f38-4c6c-922f-0760a86d7350",
+              "name": "ciudad_direccion",
+              "value": "={{ $json.ciudad_direccion }}",
+              "type": "string"
+            },
+            {
+              "id": "7b051896-e7c9-4366-afd9-fd3459aa1602",
+              "name": "email_1",
+              "value": "={{ $json.email[0] }}",
+              "type": "string"
+            },
+            {
+              "id": "69790f4b-84ff-4fb7-b127-e96a2a851dd8",
+              "name": "email_2",
+              "value": "={{ $json.email[1] }}",
+              "type": "string"
+            },
+            {
+              "id": "d72e09d9-56de-4f5a-9f3f-f463d537e04b",
+              "name": "email_3",
+              "value": "={{ $json.email[2] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        864,
+        16
+      ],
+      "id": "cc9b39af-78f3-4bba-93d1-513a2b97cb4d",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=informacion extraida del sitio web: {{ $json.sitioweb }}\nnumero_tlf:{{ $json.numero_tlf }}\ntitulo:{{ $json.titulo }}\ntipo de negocio:{{ $json.tipo }}\nubicacion:{{ $json.ciudad_direccion }}\n\ndebes analizar cual de estos correos es valido para realizar el envio del correo, si hay mas de uno valido, elige uno solo:\nemail_1:{{ $json.email_1 }}\nemail_2:{{ $json.email_2 }}\nemail_3{{ $json.email_3 }}",
+        "hasOutputParser": true,
+        "needsFallback": true,
+        "options": {
+          "systemMessage": "=Eres un **Agente de Ventas de IA de Alto Rendimiento** especializado en la prospección de negocios locales. Tu misión es redactar un correo electrónico de prospección **personalizado, conciso y de alto valor** para dueños de negocios encontrados en Google Maps.\n\n**Tu objetivo principal es:** \nredactar un correo electronico y Generar una respuesta positiva (una reunión o solicitud de portafolio) ofreciendo los servicios de **Johnteam.IA** (página web: johnteamzai.com).\n\n### 🎯 Directrices de Redacción\n\n1.  **Personalización y Contexto:**\n    * Comienza el correo mencionando el **Título** (nombre) y el **Tipo de Negocio** del destinatario para demostrar que la investigación fue específica.\n    * Utiliza el campo **SitioWeb** para generar una mención breve y relevante (ej. \"Vi su sitio web y me llamó la atención...\").\n    * La **Dirección** y el **Email** son solo para el envío, **NO** deben ser mencionados en el cuerpo del correo.\n\n2.  **Propuesta de Valor (Johnteam.IA):**\n    * El cuerpo principal del correo debe girar en torno a **crear procesos de negocio automatizados y agentes de IA** con un enfoque en la mejora de la eficiencia y el crecimiento.\n    * **Servicios Clave a Mencionar:**\n        * Creación de procesos de automatización (flujos de trabajo).\n        * Agentes de IA para *onboarding* de clientes.\n        * Agentes de IA para soporte al cliente.\n        * Clasificadores de *leads* de alta precisión.\n\n3.  **Apalancamiento de Credibilidad y Resultados (El \"Gancho\"):**\n    * Debe ser el argumento más fuerte. Presenta a Johnteam.IA como un *partner* de élite.\n    * Menciona que tienes un **portafolio robusto y casos de éxito** comprobados.\n    * **Cifras de Impacto:** Incluye que tus Agentes de IA están:\n        * Cerrando ventas con **ROI positivos**.\n        * Alcanzando tasas de conversión **superiores al 10%**.\n    * **Exclusividad:** Subraya tu pertenencia al **5% superior** de los desarrolladores que han logrado crear Agentes de IA 100% funcionales y eficaces.\n\n4.  **Estructura y Tono:**\n    * **Tono:** Profesional, directo, orientado a resultados y que inspire confianza. Evita el lenguaje técnico excesivo.\n    * **Formato:** Debe ser fácil de leer (usa párrafos cortos).\n    * **Llamada a la Acción (CTA) Única y Clara:** El correo debe terminar solicitando una **conversación rápida** o una **respuesta afirmativa** para enviar el portafolio/casos de éxito. (Ej. \"¿Estaría abierto a una breve llamada de 15 minutos esta semana?\").\n\n### 📋 Estructura de Salida Requerida\n\nGenera **SOLAMENTE** el texto del correo electrónico. No incluyas explicaciones ni notas. Utiliza la siguiente plantilla:\n\n**ASUNTO:** Propuesta de **[Título/Tipo de Negocio]** | Automatización y Agentes IA\n**CUERPO:**\nHola [Título del negocio],\n\n[Párrafo de personalización y reconocimiento, mencionando el Tipo de Negocio y el SitioWeb].\n\n... [Párrafo de propuesta de valor de los servicios] ...\n\n... [Párrafo de credibilidad y cifras de impacto] ...\n\n... [Párrafo de CTA] ...\n\nSaludos,\nJohnteam.IA\njohnteamzai.com\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        1072,
+        16
+      ],
+      "id": "27179150-95e9-4143-af6c-c876314e59ea",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5.1",
+          "mode": "list",
+          "cachedResultName": "gpt-5.1"
+        },
+        "builtInTools": {},
+        "options": {
+          "temperature": 0.5
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        912,
+        224
+      ],
+      "id": "c4e2bb72-c0d0-452c-88c1-c1b53375022c",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "TU_OPENAI_CREDENTIAL_ID_AQUI",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.sitioweb }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        1168,
+        256
+      ],
+      "id": "53c0caa9-16dd-414d-8d78-863953e6f100",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "e9f8c5e2-7546-449a-8502-19699222a098",
+              "leftValue": "={{ $json.estado }}",
+              "rightValue": "en_espera",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        208,
+        0
+      ],
+      "id": "8a3e35e0-9563-40f9-ba39-83322e767e9b",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1056,
+        240
+      ],
+      "id": "f8b2aece-8cf0-4e56-baf5-d22f914e6ca1",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "TU_GOOGLE_GEMINI_CREDENTIAL_ID_AQUI",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"email\": \"[Email del Destinatario]\",\n  \"asunto\": \"Propuesta de [Título/Tipo de Negocio] | Automatización y Agentes IA\",\n  \"cuerpo\": \"Hola [Título del negocio],\\n\\n[Párrafo de personalización y reconocimiento, mencionando el Tipo de Negocio y el SitioWeb].\\n\\n[Párrafo de propuesta de valor de los servicios]\\n\\n[Párrafo de credibilidad y cifras de impacto]\\n\\n[Párrafo de CTA]\\n\\n\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1328,
+        256
+      ],
+      "id": "abda67af-50f1-44cd-a21e-c628d5bd5658",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.email_1 }}",
+        "subject": "={{ $json.asunto }}",
+        "message": "={{ $json.text }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2016,
+        16
+      ],
+      "id": "38a76856-4ca3-4f43-a6ad-6486b8738e8e",
+      "name": "Send a message",
+      "webhookId": "TU_WEBHOOK_ID_AQUI",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "TU_GMAIL_CREDENTIAL_ID_AQUI",
+          "name": "gmail johnteam380"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "oneTemplate": true,
+        "template": "=<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n  <meta charset=\"UTF-8\">\n  <title>Email Automático</title>\n  <style>\n    body {\n      font-family: Arial, sans-serif;\n      background-color: #f5f7fa;\n      margin: 0;\n      padding: 0;\n      color: #333;\n    }\n    .container {\n      max-width: 620px;\n      background: #ffffff;\n      margin: 20px auto;\n      padding: 25px;\n      border-radius: 10px;\n      border: 1px solid #e5e5e5;\n    }\n    h1 {\n      font-size: 22px;\n      text-align: center;\n      color: #1c5db3;\n    }\n    .content {\n      font-size: 15px;\n      line-height: 1.6;\n    }\n    .cta {\n      text-align: center;\n      margin-top: 25px;\n    }\n    .btn {\n      display: inline-block;\n      padding: 12px 22px;\n      background: #1abc9c;\n      color: #ffffff !important;\n      text-decoration: none;\n      border-radius: 6px;\n      font-weight: bold;\n      font-size: 15px;\n    }\n    .footer {\n      text-align: center;\n      font-size: 12px;\n      margin-top: 30px;\n      color: #777;\n    }\n  </style>\n</head>\n<body>\n\n  <div class=\"container\">\n    <h1>Johnteam.IA 🚀</h1>\n\n    <!-- CONTENIDO AUTOMÁTICO DESDE TU JSON -->\n    <div class=\"content\" id=\"content\">\n      {{ $json.output.cuerpo }}\n    </div>\n\n    <div class=\"cta\">\n      <a href=\"https://johnteamzai.com\" class=\"btn\" target=\"_blank\">\n        Quiero saber más\n      </a>\n    </div>\n    \n    <div class=\"footer\">\n      © Johnteam.IA — johnteamzai.com\n    </div>\n  </div>\n\n  <!-- Script para convertir texto plano en HTML -->\n  <script>\n    (function() {\n      var el = document.getElementById(\"content\");\n      if (!el) return;\n      var text = el.innerHTML;\n      text = text.replace(/\\n{2,}/g, '</p><p>');\n      text = '<p>' + text.replace(/\\n/g, '<br>') + '</p>';\n      el.innerHTML = text;\n    })();\n  </script>\n\n</body>\n</html>"
+      },
+      "type": "n8n-nodes-document-generator.documentGenerator",
+      "typeVersion": 1,
+      "position": [
+        1456,
+        16
+      ],
+      "id": "14d3d615-0f70-45bd-abb9-87ec5bbd4ad8",
+      "name": "DocumentGenerator"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b547f5e9-9222-420c-bf8e-aa8b9f0dc2be",
+              "name": "text",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            },
+            {
+              "id": "3dd71f9e-77b6-4300-a2da-f87bb3f6faf8",
+              "name": "asunto",
+              "value": "={{ $('AI Agent').item.json.output.asunto }}",
+              "type": "string"
+            },
+            {
+              "id": "9c704bdb-c345-4802-bbaf-baf2419d42eb",
+              "name": "email_1",
+              "value": "={{ $('AI Agent').item.json.output.email }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1680,
+        16
+      ],
+      "id": "666306b7-2cdf-4ecf-b999-10b6597df50b",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "TU_DOCUMENT_ID_COLD_EMAIL_AQUI",
+          "mode": "list",
+          "cachedResultName": "datos cold email",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/TU_DOCUMENT_ID_COLD_EMAIL_AQUI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/TU_DOCUMENT_ID_COLD_EMAIL_AQUI/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "sitioweb": "={{ $('Edit Fields').item.json.sitioweb }}",
+            "asunto": "={{ $('Edit Fields1').item.json.asunto }}",
+            "email": "={{ $('Edit Fields1').item.json.email_1 }}",
+            "row_number": 0,
+            "estado": "enviado"
+          },
+          "matchingColumns": [
+            "sitioweb"
+          ],
+          "schema": [
+            {
+              "id": "sitioweb",
+              "displayName": "sitioweb",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "numero_tlf",
+              "displayName": "numero_tlf",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "titulo",
+              "displayName": "titulo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "tipo",
+              "displayName": "tipo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ciudad_direccion",
+              "displayName": "ciudad_direccion",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "estado",
+              "displayName": "estado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "asunto",
+              "displayName": "asunto",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2336,
+        16
+      ],
+      "id": "daa1397e-e196-4dbe-9fae-357049fb44cd",
+      "name": "Update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "TU_GOOGLE_SHEETS_CREDENTIAL_ID_AQUI",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Sheets Trigger": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "DocumentGenerator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DocumentGenerator": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "2885a634-bb56-4508-959e-1b88e549a9cf",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "TU_INSTANCE_ID_AQUI"
+  },
+  "id": "imZP0qTxhLsMDY1D",
+  "tags": []
+}

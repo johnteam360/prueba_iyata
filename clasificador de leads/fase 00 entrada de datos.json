@@ -1,0 +1,782 @@
+{
+  "name": "fase 00 entrada de datos",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "48166b70-a1f6-429e-b150-bbc7d37f3bb1",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -2672,
+        1168
+      ],
+      "id": "c28ba670-000b-446e-be53-c3ca555c20b7",
+      "name": "Webhook1",
+      "webhookId": "48166b70-a1f6-429e-b150-bbc7d37f3bb1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "82d42fb3-13ed-4227-be82-f06ab3744f60",
+              "name": "wa_id",
+              "value": "={{ $json.body.conversation.contact_inbox.source_id }}",
+              "type": "string"
+            },
+            {
+              "id": "f0d7fdf0-cb76-40b1-9628-8b1d05481cfe",
+              "name": "account_id",
+              "value": "={{ $json.body.conversation.messages[0].account_id }}",
+              "type": "number"
+            },
+            {
+              "id": "f62ac919-1a62-49f8-a5d6-8d98819cba6d",
+              "name": "conversation_id",
+              "value": "={{ $json.body.conversation.messages[0].conversation_id }}",
+              "type": "number"
+            },
+            {
+              "id": "71cef51c-d061-4183-a3f7-b2d18a2fa3a0",
+              "name": "quien_envia",
+              "value": "={{ $json.body.conversation.messages[0].sender.type }}",
+              "type": "string"
+            },
+            {
+              "id": "a9896a64-7e80-4e3d-8bd9-3b418b7526b4",
+              "name": "tipo_de_mensaje",
+              "value": "={{ $json.body.conversation.messages[0].content_type }}",
+              "type": "string"
+            },
+            {
+              "id": "39e6015c-45e6-4ba4-b42f-a72ce08a8c26",
+              "name": "mensaje_usuario",
+              "value": "={{ $json.body.content }}",
+              "type": "string"
+            },
+            {
+              "id": "9ddba980-50fa-4c0c-b409-49609de8f02f",
+              "name": "etiqueta",
+              "value": "={{ $json.body.conversation.labels[0] }}",
+              "type": "string"
+            },
+            {
+              "id": "dc4544a9-b513-4097-b511-dd3ecf0870cb",
+              "name": "tipo_attachments",
+              "value": "={{ $json.body.conversation.messages[0].attachments[0].file_type }}",
+              "type": "string"
+            },
+            {
+              "id": "ed481811-4c67-4d4b-b77f-ff6ee063e256",
+              "name": "url_attachments",
+              "value": "={{ $json.body.conversation.messages[0].attachments[0].data_url }}",
+              "type": "string"
+            },
+            {
+              "id": "9d8a7eba-9e24-4bde-af7c-2d5ab6140029",
+              "name": "mensaje_id",
+              "value": "={{ $json.body.conversation.messages[0].source_id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2448,
+        1168
+      ],
+      "id": "b1fb400b-e8fd-466d-b45b-cd54d29a8f45",
+      "name": "normalizar datos "
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "16970360-8850-49ce-8c20-33f2584467b1",
+              "name": "wa_id",
+              "value": "={{ $('normalizar datos ').item.json.wa_id }}",
+              "type": "string"
+            },
+            {
+              "id": "1987b712-7eb7-4f85-bfc9-83470510d314",
+              "name": "account_id",
+              "value": "={{ $('normalizar datos ').item.json.account_id }}",
+              "type": "number"
+            },
+            {
+              "id": "5b762b50-5de5-4626-bac1-b898a62c3e2f",
+              "name": "conversation_id",
+              "value": "={{ $('normalizar datos ').item.json.conversation_id }}",
+              "type": "string"
+            },
+            {
+              "id": "12664851-4781-42e8-a451-d6a153b9e13d",
+              "name": "tipo_de_mensaje",
+              "value": "={{ $('normalizar datos ').item.json.tipo_de_mensaje }}",
+              "type": "string"
+            },
+            {
+              "id": "58877048-ca4c-4098-86ec-9482ce598804",
+              "name": "mensaje_usuario",
+              "value": "={{ $('normalizar datos ').item.json.mensaje_usuario }}",
+              "type": "string"
+            },
+            {
+              "id": "f01ae0a4-7d7e-4985-8378-1aa5a0f2bfce",
+              "name": "etiqueta",
+              "value": "={{ $('normalizar datos ').item.json.etiqueta }}",
+              "type": "string"
+            },
+            {
+              "id": "8afe5b5f-63ab-4f17-950d-5be739b327e3",
+              "name": "tipo_attachments",
+              "value": "={{ $('normalizar datos ').item.json.tipo_attachments }}",
+              "type": "string"
+            },
+            {
+              "id": "53dad319-6712-455a-96c4-21ecfef0cf95",
+              "name": "url_attachments",
+              "value": "={{ $('normalizar datos ').item.json.url_attachments }}",
+              "type": "string"
+            },
+            {
+              "id": "e7e5a7e8-718e-4a18-b46e-3caaceb4bb23",
+              "name": "mensaje_id",
+              "value": "={{ $('normalizar datos ').item.json.mensaje_id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -656,
+        976
+      ],
+      "id": "0cce018f-1d16-4a8f-8fff-cb0c93a79a7b",
+      "name": "recoger datos"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -1776,
+        1168
+      ],
+      "id": "cb394d0f-ef82-4e71-805b-3ecb75f76ff8",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "de87d820-5a73-4a06-a756-a33df5d19ab9",
+              "leftValue": "={{ $json.quien_envia }}",
+              "rightValue": "contact",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -2000,
+        1072
+      ],
+      "id": "9e0bdb0b-fc2c-48ff-a6be-1aecf139de3a",
+      "name": "quien envia?"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1puyDF30RaCatIADBHnucz5w1cPDWZUTAOt9vcwzgt6o",
+          "mode": "list",
+          "cachedResultName": "Tabla_admision_ibague",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1puyDF30RaCatIADBHnucz5w1cPDWZUTAOt9vcwzgt6o/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1puyDF30RaCatIADBHnucz5w1cPDWZUTAOt9vcwzgt6o/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Numero",
+              "lookupValue": "={{ $json.wa_id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -1776,
+        976
+      ],
+      "id": "cd60995d-ff65-41e7-9762-33bc24097803",
+      "name": "existe usuario?",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "eS2XVIloIvGaNwej",
+          "name": "Google Sheets account"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "4fb640bf-f782-44f8-80c0-07da223ee6e7",
+              "leftValue": "={{ $json.Numero.toString() }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1552,
+        976
+      ],
+      "id": "2b76ad35-c171-44b3-9059-cc8c9707e22e",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1puyDF30RaCatIADBHnucz5w1cPDWZUTAOt9vcwzgt6o",
+          "mode": "list",
+          "cachedResultName": "Tabla_admision_ibague",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1puyDF30RaCatIADBHnucz5w1cPDWZUTAOt9vcwzgt6o/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1puyDF30RaCatIADBHnucz5w1cPDWZUTAOt9vcwzgt6o/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Numero": "={{ $json.wa_id }}",
+            "account_id": "={{ $json.account_id }}",
+            "conversation_id": "={{ $json.conversation_id }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Nombre del tutor",
+              "displayName": "Nombre del tutor",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Nombre del perro",
+              "displayName": "Nombre del perro",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Raza",
+              "displayName": "Raza",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Edad",
+              "displayName": "Edad",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Socializa",
+              "displayName": "Socializa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Comportamiento urgente a corregir",
+              "displayName": "Comportamiento urgente a corregir",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Que le gustaria al  tutor que parendiera su perro",
+              "displayName": "Que le gustaria al  tutor que parendiera su perro",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "disponiblidad para inicial",
+              "displayName": "disponiblidad para inicial",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Estado",
+              "displayName": "Estado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Numero",
+              "displayName": "Numero",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ID documento",
+              "displayName": "ID documento",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "hora",
+              "displayName": "hora",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Diagnostico confirmado",
+              "displayName": "Diagnostico confirmado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "account_id",
+              "displayName": "account_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "conversation_id",
+              "displayName": "conversation_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -1120,
+        912
+      ],
+      "id": "1aaf3ac0-aa93-40d9-a682-e38f857e7195",
+      "name": "registrar numero,account,coversation",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "eS2XVIloIvGaNwej",
+          "name": "Google Sheets account"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "649ztzmcGdteMMzw",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/649ztzmcGdteMMzw",
+          "cachedResultName": "transformacion de datos"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {}
+        },
+        "options": {
+          "waitForSubWorkflow": false
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        -432,
+        976
+      ],
+      "id": "d8ad036f-0fda-4f17-b9f9-7c83df049a2c",
+      "name": "Call 'transformacion de datos'"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -208,
+        976
+      ],
+      "id": "747a499d-1717-4bc4-a1ff-dd0eeb7bafe0",
+      "name": "No Operation, do nothing1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "e4a02dfb-339c-4411-8b4c-d5b21dd8337e",
+              "leftValue": "={{ $json.etiqueta }}",
+              "rightValue": "en_proceso_pago_grupales",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -2224,
+        1168
+      ],
+      "id": "43884517-0563-4940-bb64-e951ed4e8825",
+      "name": "If"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -2000,
+        1264
+      ],
+      "id": "f59381ab-f133-472b-9c97-1c1b898dc2da",
+      "name": "No Operation, do nothing2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "16970360-8850-49ce-8c20-33f2584467b1",
+              "name": "wa_id",
+              "value": "={{ $('normalizar datos ').item.json.wa_id }}",
+              "type": "string"
+            },
+            {
+              "id": "1987b712-7eb7-4f85-bfc9-83470510d314",
+              "name": "account_id",
+              "value": "={{ $('normalizar datos ').item.json.account_id }}",
+              "type": "number"
+            },
+            {
+              "id": "5b762b50-5de5-4626-bac1-b898a62c3e2f",
+              "name": "conversation_id",
+              "value": "={{ $('normalizar datos ').item.json.conversation_id }}",
+              "type": "string"
+            },
+            {
+              "id": "12664851-4781-42e8-a451-d6a153b9e13d",
+              "name": "tipo_de_mensaje",
+              "value": "={{ $('normalizar datos ').item.json.tipo_de_mensaje }}",
+              "type": "string"
+            },
+            {
+              "id": "58877048-ca4c-4098-86ec-9482ce598804",
+              "name": "mensaje_usuario",
+              "value": "={{ $('normalizar datos ').item.json.mensaje_usuario }}",
+              "type": "string"
+            },
+            {
+              "id": "f01ae0a4-7d7e-4985-8378-1aa5a0f2bfce",
+              "name": "etiqueta",
+              "value": "={{ $('normalizar datos ').item.json.etiqueta }}",
+              "type": "string"
+            },
+            {
+              "id": "8afe5b5f-63ab-4f17-950d-5be739b327e3",
+              "name": "tipo_attachments",
+              "value": "={{ $('normalizar datos ').item.json.tipo_attachments }}",
+              "type": "string"
+            },
+            {
+              "id": "53dad319-6712-455a-96c4-21ecfef0cf95",
+              "name": "url_attachments",
+              "value": "={{ $('normalizar datos ').item.json.url_attachments }}",
+              "type": "string"
+            },
+            {
+              "id": "e7e5a7e8-718e-4a18-b46e-3caaceb4bb23",
+              "name": "mensaje_id",
+              "value": "={{ $('normalizar datos ').item.json.mensaje_id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1328,
+        896
+      ],
+      "id": "3d09ccaa-2432-4615-90f5-4bae8b83f818",
+      "name": "recoger datos1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook1": {
+      "main": [
+        [
+          {
+            "node": "normalizar datos ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "normalizar datos ": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "recoger datos": {
+      "main": [
+        [
+          {
+            "node": "Call 'transformacion de datos'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "quien envia?": {
+      "main": [
+        [
+          {
+            "node": "existe usuario?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "existe usuario?": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "recoger datos1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "recoger datos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "registrar numero,account,coversation": {
+      "main": [
+        [
+          {
+            "node": "recoger datos",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Call 'transformacion de datos'": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "quien envia?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "recoger datos1": {
+      "main": [
+        [
+          {
+            "node": "registrar numero,account,coversation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "America/Bogota",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false,
+    "errorWorkflow": "2VnfOGSVJdUeE3OK"
+  },
+  "versionId": "2b6a2781-19ee-48db-9db5-4ad3aacd23bf",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a6b91e3c21443cd9a3780d90ba42efabb4041f0383ca937391f354fe0e1f80ff"
+  },
+  "id": "433wZrkKac8StYdw",
+  "tags": []
+}

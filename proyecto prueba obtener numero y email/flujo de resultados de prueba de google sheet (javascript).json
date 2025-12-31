@@ -1,0 +1,722 @@
+{
+  "name": "flujo de resultados de prueba de google sheet (javascript)",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        -32
+      ],
+      "id": "f7697b09-c48e-4df0-9b22-b204e1dcd930",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "TU_DOCUMENT_ID_AQUI",
+          "mode": "list",
+          "cachedResultName": "Copia de Prueba contratación",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/TU_DOCUMENT_ID_AQUI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 834945924,
+          "mode": "list",
+          "cachedResultName": "Nueva lista de contactos sin ajustar",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/TU_DOCUMENT_ID_AQUI/edit#gid=TU_SHEET_ID_AQUI"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        224,
+        -32
+      ],
+      "id": "09ba5067-2ee0-4fe8-8fdb-8b948369ecac",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "TU_CREDENTIAL_ID_AQUI",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "let count = 0;\n\nfor (const item of items) {\n  const telefonoStr = item.json.telefono ? String(item.json.telefono) : \"\";\n  const nacionalidad = item.json.nacionalidad;\n\n  const telefonoClean = telefonoStr.replace(/\\D/g, \"\");\n\n  if (\n    nacionalidad === \"es_CO\" &&\n    telefonoClean.length === 10 &&\n    telefonoClean.startsWith(\"3\")\n  ) {\n    count++;\n  }\n}\n\nreturn [\n  {\n    json: {\n      total_telefonos_colombianos_validos: count\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        -512
+      ],
+      "id": "749384e5-4b47-4e30-bb82-032a2c3f4785",
+      "name": "conteo de telfonos colombianos validos"
+    },
+    {
+      "parameters": {
+        "jsCode": "let count = 0;\n\nfor (const item of items) {\n  const emailRaw = item.json.email;\n  const email = emailRaw ? String(emailRaw).trim().toLowerCase() : \"\";\n\n  const isValidEmail =\n    email !== \"\" &&\n    !email.includes(\" \") &&\n    email.includes(\"@\") &&\n    email.split(\"@\").length === 2 &&\n    email.split(\"@\")[1].includes(\".\");\n\n  if (isValidEmail) {\n    count++;\n  }\n}\n\nreturn [{ json: { emails_validos: count } }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        256
+      ],
+      "id": "6a3c0433-b90b-45d5-813c-07b62f6e6534",
+      "name": "conteo de email validos"
+    },
+    {
+      "parameters": {
+        "jsCode": "let count = 0;\n\nfor (const item of items) {\n  const emailRaw = item.json.email;\n  const email = emailRaw ? String(emailRaw).trim().toLowerCase() : \"\";\n\n  const isValidEmail =\n    email !== \"\" &&\n    !email.includes(\" \") &&\n    email.includes(\"@\") &&\n    email.split(\"@\").length === 2 &&\n    email.split(\"@\")[1].includes(\".\");\n\n  if (email !== \"\" && !isValidEmail) {\n    count++;\n  }\n}\n\nreturn [{ json: { emails_invalidos: count } }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        448
+      ],
+      "id": "72f2e415-4bbc-4b2e-a16b-df3696808770",
+      "name": "conteo de email invalidos"
+    },
+    {
+      "parameters": {
+        "jsCode": "let count = 0;\n\nfor (const item of items) {\n  const telefonoStr = item.json.telefono ? String(item.json.telefono) : \"\";\n  const nacionalidad = item.json.nacionalidad;\n\n  const telefonoClean = telefonoStr.replace(/\\D/g, \"\");\n\n  const isColombian =\n    telefonoClean.length === 10 && telefonoClean.startsWith(\"3\");\n\n  const isForeignValid =\n    nacionalidad !== \"es_CO\" &&\n    telefonoClean.length >= 7 &&\n    telefonoClean.length <= 15 &&\n    !isColombian;\n\n  if (isForeignValid) {\n    count++;\n  }\n}\n\nreturn [{ json: { telefonos_extranjeros_validos: count } }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        -320
+      ],
+      "id": "686d95dc-64fe-4700-b225-b9e52ee5284c",
+      "name": "conteo telefonos extranjeros validos"
+    },
+    {
+      "parameters": {
+        "jsCode": "let count = 0;\n\nfor (const item of items) {\n  const telefonoStr = item.json.telefono ? String(item.json.telefono) : \"\";\n  const nacionalidad = item.json.nacionalidad;\n\n  const telefonoClean = telefonoStr.replace(/\\D/g, \"\");\n\n  const isColombianValid =\n    nacionalidad === \"es_CO\" &&\n    telefonoClean.length === 10 &&\n    telefonoClean.startsWith(\"3\");\n\n  const isForeignValid =\n    nacionalidad !== \"es_CO\" &&\n    telefonoClean.length >= 7 &&\n    telefonoClean.length <= 15;\n\n  if (!isColombianValid && !isForeignValid) {\n    count++;\n  }\n}\n\nreturn [{ json: { telefonos_invalidos_totales: count } }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        -128
+      ],
+      "id": "11eebbfc-9b95-4076-a9af-16211131a2dd",
+      "name": "conteo telefonos no validos"
+    },
+    {
+      "parameters": {
+        "jsCode": "let count = 0;\n\nfor (const item of items) {\n  const telefonoStr = item.json.telefono ? String(item.json.telefono) : \"\";\n  const nacionalidad = item.json.nacionalidad;\n\n  // Limpieza\n  const telefonoClean = telefonoStr.replace(/\\D/g, \"\");\n\n  // Teléfono colombiano válido\n  const isColombianPhone =\n    telefonoClean.length === 10 &&\n    telefonoClean.startsWith(\"3\");\n\n  // Nacionalidad extranjera\n  const isForeignNationality =\n    nacionalidad && nacionalidad !== \"es_CO\";\n\n  if (isColombianPhone && isForeignNationality) {\n    count++;\n  }\n}\n\nreturn [\n  {\n    json: {\n      colombianos_en_nacionalidad_extranjera: count\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        64
+      ],
+      "id": "7c85f204-8463-4bc8-bd00-d78674eeb3ed",
+      "name": "6. Conteo de números colombianos en nacionalidad extranjera"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "TU_DOCUMENT_ID_AQUI",
+          "mode": "list",
+          "cachedResultName": "Copia de Prueba contratación",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/TU_DOCUMENT_ID_AQUI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1750655662,
+          "mode": "list",
+          "cachedResultName": "Dashboard",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/TU_DOCUMENT_ID_AQUI/edit#gid=TU_DASHBOARD_SHEET_ID_AQUI"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "METRICAS": "Emails válidos",
+            "RESULTADO FINAL": "={{ $json.emails_validos }}"
+          },
+          "matchingColumns": [
+            "METRICAS"
+          ],
+          "schema": [
+            {
+              "id": "METRICAS",
+              "displayName": "METRICAS",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "RESULTADO ESPERADO",
+              "displayName": "RESULTADO ESPERADO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "RESULTADO FINAL",
+              "displayName": "RESULTADO FINAL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        720,
+        256
+      ],
+      "id": "de365de2-225b-4940-b769-1a7148105b2d",
+      "name": "Emails válidos",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "TU_CREDENTIAL_ID_AQUI",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "TU_DOCUMENT_ID_AQUI",
+          "mode": "list",
+          "cachedResultName": "Copia de Prueba contratación",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/TU_DOCUMENT_ID_AQUI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1750655662,
+          "mode": "list",
+          "cachedResultName": "Dashboard",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/TU_DOCUMENT_ID_AQUI/edit#gid=TU_DASHBOARD_SHEET_ID_AQUI"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "METRICAS": "Emails inválidos",
+            "RESULTADO FINAL": "={{ $json.emails_invalidos }}"
+          },
+          "matchingColumns": [
+            "METRICAS"
+          ],
+          "schema": [
+            {
+              "id": "METRICAS",
+              "displayName": "METRICAS",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "RESULTADO ESPERADO",
+              "displayName": "RESULTADO ESPERADO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "RESULTADO FINAL",
+              "displayName": "RESULTADO FINAL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        720,
+        432
+      ],
+      "id": "33d33fbe-d49c-458a-9852-f218e92868ba",
+      "name": "Emails inválidos",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "TU_CREDENTIAL_ID_AQUI",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "TU_DOCUMENT_ID_AQUI",
+          "mode": "list",
+          "cachedResultName": "Copia de Prueba contratación",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/TU_DOCUMENT_ID_AQUI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1750655662,
+          "mode": "list",
+          "cachedResultName": "Dashboard",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/TU_DOCUMENT_ID_AQUI/edit#gid=TU_DASHBOARD_SHEET_ID_AQUI"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "METRICAS": "Teléfonos colombianos válidos",
+            "RESULTADO FINAL": "={{ $json.total_telefonos_colombianos_validos }}"
+          },
+          "matchingColumns": [
+            "METRICAS"
+          ],
+          "schema": [
+            {
+              "id": "METRICAS",
+              "displayName": "METRICAS",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "RESULTADO ESPERADO",
+              "displayName": "RESULTADO ESPERADO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "RESULTADO FINAL",
+              "displayName": "RESULTADO FINAL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        688,
+        -512
+      ],
+      "id": "a9063bf8-fec3-47ab-a612-60c8c16f6ce6",
+      "name": "Teléfonos colombianos válidos",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "TU_CREDENTIAL_ID_AQUI",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "TU_DOCUMENT_ID_AQUI",
+          "mode": "list",
+          "cachedResultName": "Copia de Prueba contratación",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/TU_DOCUMENT_ID_AQUI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1750655662,
+          "mode": "list",
+          "cachedResultName": "Dashboard",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/TU_DOCUMENT_ID_AQUI/edit#gid=TU_DASHBOARD_SHEET_ID_AQUI"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "METRICAS": "Teléfonos extranjeros válidos",
+            "RESULTADO FINAL": "={{ $json.telefonos_extranjeros_validos }}"
+          },
+          "matchingColumns": [
+            "METRICAS"
+          ],
+          "schema": [
+            {
+              "id": "METRICAS",
+              "displayName": "METRICAS",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "RESULTADO ESPERADO",
+              "displayName": "RESULTADO ESPERADO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "RESULTADO FINAL",
+              "displayName": "RESULTADO FINAL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        688,
+        -320
+      ],
+      "id": "b1fcff31-afe2-4b14-bea3-3f80be259873",
+      "name": "Teléfonos extranjeros válidos",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "TU_CREDENTIAL_ID_AQUI",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "TU_DOCUMENT_ID_AQUI",
+          "mode": "list",
+          "cachedResultName": "Copia de Prueba contratación",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/TU_DOCUMENT_ID_AQUI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1750655662,
+          "mode": "list",
+          "cachedResultName": "Dashboard",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/TU_DOCUMENT_ID_AQUI/edit#gid=TU_DASHBOARD_SHEET_ID_AQUI"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "METRICAS": "5. Conteo de teléfonos inválidos totales",
+            "RESULTADO FINAL": "={{ $json.telefonos_invalidos_totales }}"
+          },
+          "matchingColumns": [
+            "METRICAS"
+          ],
+          "schema": [
+            {
+              "id": "METRICAS",
+              "displayName": "METRICAS",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "RESULTADO ESPERADO",
+              "displayName": "RESULTADO ESPERADO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "RESULTADO FINAL",
+              "displayName": "RESULTADO FINAL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        688,
+        -128
+      ],
+      "id": "d9a3cdc2-096c-4a86-9d39-6a3334d1c832",
+      "name": "5. Conteo de teléfonos inválidos totales",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "TU_CREDENTIAL_ID_AQUI",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "TU_DOCUMENT_ID_AQUI",
+          "mode": "list",
+          "cachedResultName": "Copia de Prueba contratación",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/TU_DOCUMENT_ID_AQUI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1750655662,
+          "mode": "list",
+          "cachedResultName": "Dashboard",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/TU_DOCUMENT_ID_AQUI/edit#gid=TU_DASHBOARD_SHEET_ID_AQUI"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "METRICAS": "6. Conteo de números colombianos en nacionalidad extranjera",
+            "RESULTADO FINAL": "={{ $json.colombianos_en_nacionalidad_extranjera }}"
+          },
+          "matchingColumns": [
+            "METRICAS"
+          ],
+          "schema": [
+            {
+              "id": "METRICAS",
+              "displayName": "METRICAS",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "RESULTADO ESPERADO",
+              "displayName": "RESULTADO ESPERADO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "RESULTADO FINAL",
+              "displayName": "RESULTADO FINAL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        672,
+        64
+      ],
+      "id": "2a00bbf6-c9c0-43dd-941e-5824f243b026",
+      "name": "6. Conteo de números colombianos en nacionalidad extranjera1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "TU_CREDENTIAL_ID_AQUI",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "conteo de email validos",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "conteo de telfonos colombianos validos",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "conteo de email invalidos",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "conteo telefonos extranjeros validos",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "conteo telefonos no validos",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "6. Conteo de números colombianos en nacionalidad extranjera",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "conteo de telfonos colombianos validos": {
+      "main": [
+        [
+          {
+            "node": "Teléfonos colombianos válidos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "conteo de email validos": {
+      "main": [
+        [
+          {
+            "node": "Emails válidos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "conteo de email invalidos": {
+      "main": [
+        [
+          {
+            "node": "Emails inválidos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "conteo telefonos extranjeros validos": {
+      "main": [
+        [
+          {
+            "node": "Teléfonos extranjeros válidos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "conteo telefonos no validos": {
+      "main": [
+        [
+          {
+            "node": "5. Conteo de teléfonos inválidos totales",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "6. Conteo de números colombianos en nacionalidad extranjera": {
+      "main": [
+        [
+          {
+            "node": "6. Conteo de números colombianos en nacionalidad extranjera1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "a61cf5ce-3227-4edf-b1c3-b210dba2384d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "TU_INSTANCE_ID_AQUI"
+  },
+  "id": "0D5wX8UDSi8z4DT9",
+  "tags": []
+}
